@@ -1,0 +1,132 @@
+html, body {
+    font-family: Roboto, 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    height: 100%;
+}
+p, ul, li {
+    margin: 0;
+    padding: 0;
+}
+.header {
+    background-color: rgb(10, 57, 125);
+    height: 80px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.header1 {
+    width: 300px;
+    margin-left: 20px;
+
+}
+.web-logo {
+    height: 80px;
+    width: auto;
+}
+.header3 {
+    min-width: 500px;
+    width: 500px;
+    color:white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.header3 ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.header3 ul li {
+    display: inline-block;
+    padding: 0px 20px;
+}
+.header3 ul li a{
+    color: white;
+    text-decoration: none;
+}
+.header3 ul li a :hover {
+    text-decoration: underline;
+}
+.header3 ul li a :active {
+    scale: 0.7;
+}
+.main-container {
+    flex: 1;
+}
+.footer {
+    display: flex;
+    flex-direction: row;
+    height: 120px;
+    background-color: rgb(10, 57, 125);
+    padding: 0px 100px;
+    color: white;
+    column-gap: 20px;
+}
+.footer-left {
+    width: 500px;
+}
+.footer-center {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+}
+.footer-right {
+    width: 500px;
+    text-align: right;
+}
+.footer-right h4 {
+    margin-bottom: 0px;
+}
+.footer-right ul{
+    list-style: none;
+}
+.main-homepage {
+    color: white;
+    background-image: url(images/background-pic.jpg);
+    background-size: cover;
+    background-position: center;
+    height: calc(100vh - 200px);    
+}
+.homepage-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.search-section {
+    display: grid;
+    text-align: center;
+}
+.search-box {
+    width: 400px;
+    height: 40px;
+    margin: 0;
+    padding: 0px 20px;
+    border-color: rgb(207, 207, 207);
+    border-style: solid;
+}
+.search-button {
+    width: 40px;
+    height: 40px;
+    padding: 0px;
+    border-color: rgb(207, 207, 207);
+    border-style: solid;
+    margin-left: -2px;
+}
+.search-logo {
+    width: 30px;
+}
+.content {
+    width: 1200px;
+    margin: 0 auto;
+
+}
+.result-heading {
+    margin: 20px 0;
+}
+.result-heading h2 {
+    text-align: center;
+}

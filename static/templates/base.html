@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>T2D SNPs</title>
+        <link rel="stylesheet" href="main.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <!-- header including navigation bar -->
+        <div class="header">
+            <div >
+                <a href="index.html"><img class="web-logo" src="{{ url_for('static', filename='images/Picture1.png') }}" alt="web logo"></a>
+            </div>
+            <div class="blank-container"></div>
+            <div class="navi-bar">
+                <a class="navi-item" href="index.html">Home</a>
+                <a class="navi-item" href="documentation.html">Documentation</a>
+                <a class="navi-item" href="help.html">Help</a>
+                <a class="navi-item" href="about.html">About us</a>
+            </div>
+        </div>
+
+        <!-- Bootstrap -->
+
+        <div class="content">{% block content %} {% endblock %}</div>
+
+        <!-- footer -->
+        <footer class="footer">
+            <img style="padding: 10px;height: 60px;" src="images/qmul-logo.jpg">
+        </footer>
+        
+    </body>
+</html>

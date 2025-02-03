@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %} Search result {% endblock %}
+
+{% block content %} 
+    <div class="content">
+        <div class="result-heading">
+            <div><h2>Search Result</h2></div>
+            <div style="display: flex; flex-direction: row; justify-content: space-between;">
+                <div><p>Result for: <i>"{{ query }}"</i></p></div>
+                <div><p><a href="/">Back to homepage</a></p></div>
+            </div>
+            
+            
+        </div>
+        <div>
+            {% if results %}
+            <table class="table table-striped">
+                <tr>
+                    <th>No</th>
+                    <th>SNP</th>
+                    <th>p-value</th>
+                    <th>Chromosome</th>
+                    <th>Chromosome position</th>
+                    <th>Mapped gene</th>
+
+                </tr>
+                {% for snp in results %}
+                <tr>
+                    <td></td>
+                    <td>{{ snp.STRONGEST_SNP_RISK_ALLELE }}</td>
+                    <td>{{ snp.P_VALUE }}</td>
+                    <td>{{ snp.CHR_ID }}</td>
+                    <td>{{ snp.CHR_POS }}</td>
+                    <td>
+                        <a href="/gene/{{ snp.MAPPED_GENE}}" target="_self">
+                            {{ snp.MAPPED_GENE}}
+                        </a>
+                    </td>
+                    
+                </tr>
+                {% endfor %}
+            </table>
+            {% else %}
+                <p>No matching result.</p>
+            {% endif %}
+        </div>
+    </div>   
+{% endblock %}
