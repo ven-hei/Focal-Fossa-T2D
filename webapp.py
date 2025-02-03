@@ -1,5 +1,6 @@
 from flask import Flask, render_template, url_for, redirect, request
 import sqlite3
+import pandas as pd
 
 app = Flask(__name__)
 
@@ -32,25 +33,48 @@ def result():
     return render_template('search-result.html', results=results, query=query)
     
 # create route for gene function page
-@app.route('/gene/<string:gene_name>')
-def gene_detail(gene_name):
-    conn = get_db_connection()
-    cursor = conn.cursor()
+@app.route('/gene/<gene_name>')
+# def gene_detail(gene_name):
+#     conn = get_db_connection()
+#     cursor = conn.cursor()
     
-    # Lấy thông tin người dùng
-    cursor.execute("""
-            SELECT * FROM association 
-            WHERE MAPPED_GENE = ?
-        """, (gene_name,))
-    gene = cursor.fetchone()
+
+#     cursor.execute("""
+#             SELECT * FROM gene_info 
+#             WHERE symbol = ?
+#         """, (gene_name,))
+#     gene = cursor.fetchone()
 
     
-    conn.close()
+#     conn.close()
 
-    if not gene:
-        return "No gene information", 404
+#     if not gene:
+#         return "No gene information", 404
 
-    return render_template('gene_detail.html', gene=gene)
+#     return render_template('gene_detail.html', gene=gene)
+def gene(gene_name):
+    geneconnect = sqlite3.connect('Database/web_database.db')
+    gene_table = pd.read_sql_query("SELECT * FROM gene_info", geneconnect)
+    gene_table['symbol'] = gene_table['symbol'].astype(str)
+
+    # ensuring capital letters in gene names
+    gene_name = gene_name.upper().strip()
+
+    # trying to extract row for the specified gene
+    try:
+        row = gene_table.loc[gene_table['symbol'] == gene_name].iloc[0]
+        # if specified gene found from the dataframe, return information about it
+        return render_template('gene_detail.html', name = gene_name, \
+                                full_name = row.full_name,\
+                                term = row.functional,\
+                                database = row.database,\
+                                acc_code = row.accession_code, \
+                                link = row.db_link, \
+                                loc = row.location, \
+                                desc = row.description)
+    except:
+        # if gene not found -> key error
+        return f"We don't have any information about this gene called {gene_name}"
 
 
 
