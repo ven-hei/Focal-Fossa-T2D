@@ -7,40 +7,114 @@
         <div class="result-heading">
             <div><h2>Search Result</h2></div>
             <div style="display: flex; flex-direction: row; justify-content: space-between;">
-                <div><p>Result for: <i>"{{ query }}"</i></p></div>
+                <div><p>Result for: <i>{{ search_option_displayed}} "{{ query }}"</i></p></div>
                 <div><p><a href="/">Back to homepage</a></p></div>
             </div>
-            
-            
+            <div>
+                <form action="" method="get">
+                    Display
+                    <input type="hidden" name="query" value="{{ query }}">
+                    <input type="hidden" name="search_option" value="{{ search_option }}">
+                    <select name="number_of_result_displayed" onchange="this.form.submit()">
+                        <option value="10" {% if number_of_result_displayed == 10 %} selected {% endif %}>10</option>
+                        <option value="20" {% if number_of_result_displayed == 20 %} selected {% endif %}>20</option>
+                        <option value="50" {% if number_of_result_displayed == 50 %} selected {% endif %}>50</option>
+                        <option value="100" {% if number_of_result_displayed == 100 %} selected {% endif %}>100</option>
+                    </select>
+                    results per page
+                </form>   
+            </div>
         </div>
-        <div>
-            {% if results %}
-            <table class="table table-striped">
-                <tr>
-                    <th>No</th>
-                    <th>SNP</th>
-                    <th>p-value</th>
-                    <th>Chromosome</th>
-                    <th>Chromosome position</th>
-                    <th>Mapped gene</th>
 
-                </tr>
-                {% for snp in results %}
-                <tr>
-                    <td></td>
-                    <td>{{ snp.STRONGEST_SNP_RISK_ALLELE }}</td>
-                    <td>{{ snp.P_VALUE }}</td>
-                    <td>{{ snp.CHR_ID }}</td>
-                    <td>{{ snp.CHR_POS }}</td>
-                    <td>
-                        <a href="/gene/{{ snp.MAPPED_GENE}}" target="_self">
-                            {{ snp.MAPPED_GENE}}
-                        </a>
-                    </td>
-                    
-                </tr>
-                {% endfor %}
-            </table>
+        <!-- show table of results  -->
+        <div>
+            {% if results_displayed %}
+            <div>
+                <table class="table table-striped">
+                    <tr>
+                        <th>No</th>
+                        <th>SNP</th>
+                        <th>p-value</th>
+                        <th>Chromosome</th>
+                        <th>Chromosome position</th>
+                        <th>Mapped gene</th>
+                    </tr>
+                    {% for snp in results_displayed %}
+                    <tr>
+                        <td></td>
+                        <td>{{ snp.STRONGEST_SNP_RISK_ALLELE }}</td>
+                        <td>{{ snp.P_VALUE }}</td>
+                        <td>{{ snp.CHR_ID }}</td>
+                        <td>{{ snp.CHR_POS }}</td>
+                        <td>
+                            <a href="/gene/{{ snp.MAPPED_GENE}}" target="_self">
+                                {{ snp.MAPPED_GENE}}
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                <div>
+                    <i>Showing 
+
+                    {% if page * number_of_result_displayed <= number_of_results %}
+                        {{ (page-1)*number_of_result_displayed+1 }} - {{ page * number_of_result_displayed }} of {{ number_of_results }}
+                    {% else %}
+                        {{ (page-1)*number_of_result_displayed+1 }} - {{ number_of_results }} of {{ number_of_results }}
+                    {% endif %}
+
+                    results</i>
+                </div>
+                <div> <!-- select page to display -->
+                    {% if number_of_pages >1 %}
+                        {% if page != 1 %}
+                            <a href="/search-result?query={{ query }}&search_option={{ search_option }}&page=1&number_of_result_displayed={{ number_of_result_displayed }}">« First</a>
+                        {% endif %}
+
+                        {% if page > 1 %}
+                            <a href="/search-result?query={{ query }}&search_option={{ search_option }}&page={{ page - 1 }}&number_of_result_displayed={{ number_of_result_displayed }}">	&#60; Previous</a>
+                        {% endif %}
+                        
+
+                        {% if number_of_pages <=5 %}
+                            {% for p in range(1, number_of_pages + 1) %}
+                                {% if p == page %}
+                                    <strong>{{ p }}</strong>
+                                {% else %}
+                                    <a href="/search-result?query={{ query }}&search_option={{ search_option }}&page={{ p }}&number_of_result_displayed={{ number_of_result_displayed }}">{{ p }}</a>
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            <!-- {% if page != 1 %}
+                                <a href="/search-result?query={{ query }}&search_option={{ search_option }}&page=1&number_of_result_displayed={{ number_of_result_displayed }}">1 .....</a>
+                            {% endif %} -->
+                            {% for p in range(page-2,page+3) %}
+                                {% if p >= 1 and p <= number_of_pages %}
+                                    {% if p == page %}
+                                        <strong>{{ p }}</strong>
+                                    {% else %}
+                                        <a href="/search-result?query={{ query }}&search_option={{ search_option }}&page={{ p }}&number_of_result_displayed={{ number_of_result_displayed }}">{{ p }}</a>
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}    
+                            <!-- {% if page != number_of_pages %}
+                                <a href="/search-result?query={{ query }}&search_option={{ search_option }}&page={{ number_of_pages }}&number_of_result_displayed={{ number_of_result_displayed }}">.....{{ number_of_pages }}</a>
+                            {% endif %} -->
+                        {% endif %}
+                        
+                        {% if page < number_of_pages %}
+                            <a href="/search-result?query={{ query }}&search_option={{ search_option }}&page={{ page + 1 }}&number_of_result_displayed={{ number_of_result_displayed }}">Next &#62;</a>
+                        {% endif %}
+
+                        {% if page != number_of_pages %}
+                            <a href="/search-result?query={{ query }}&search_option={{ search_option }}&page={{ number_of_pages }}&number_of_result_displayed={{ number_of_result_displayed }}">Last »</a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+
             {% else %}
                 <p>No matching result.</p>
             {% endif %}
