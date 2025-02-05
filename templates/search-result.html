@@ -5,7 +5,7 @@
 {% block content %} 
     <div class="content">
         <div class="result-heading">
-            <div><h2>Search Result</h2></div>
+            <div><h2>Search Results</h2></div>
             <div style="display: flex; flex-direction: row; justify-content: space-between;">
                 <div><p>Result for: <i>{{ search_option_displayed}} "{{ query }}"</i></p></div>
                 <div><p><a href="/">Back to homepage</a></p></div>
@@ -114,9 +114,26 @@
                     {% endif %}
                 </div>
             </div>
+            {% if populations %}
+                    <h5>NOTE</h5>
+                    <p>There are population statistics available for these populations:</p>
+                    {% for pop in populations %}
+                    <table>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <a href="/population_stats/{{ pop.population}}" target="_self">
+                                    {{ pop.population}}
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
+                    {% endfor %}
+                {% endif %}
+
 
             {% else %}
-                <p>No matching result.</p>
+                <p>No matching results.</p>
             {% endif %}
         </div>
     </div>   

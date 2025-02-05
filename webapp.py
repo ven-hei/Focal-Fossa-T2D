@@ -16,11 +16,12 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
+# create a route for the home page
 @app.route("/")
 def home():
     return render_template('home.html')
 
-# create new route for search result to show result on new page
+# create new route for search results to show result on new page
 @app.route("/search-result")
 def result():
     query = request.args.get('query','', type=str).strip()
@@ -66,6 +67,12 @@ def result():
             """, (query,))
         
         results = cursor.fetchall()
+        # retrieve infromation from the db to find all the possible populations
+        cursor.execute("""
+            SELECT DISTINCT population FROM association 
+            WHERE STRONGEST_SNP_RISK_ALLELE LIKE ? OR REGION LIKE ? OR MAPPED_GENE LIKE ?
+            """, (query, query, query))
+        populations = cursor.fetchall()
         conn.close()
                   
 
@@ -95,29 +102,12 @@ def result():
                            number_of_pages=number_of_pages,
                            number_of_results=number_of_results,
                            page=page,
-                           number_of_result_displayed=number_of_result_displayed) #CHECK exception
+                           number_of_result_displayed=number_of_result_displayed,
+                           populations = populations) #CHECK exception
     
 
 # create route for gene function page
 @app.route('/gene/<gene_name>')
-# def gene_detail(gene_name):
-#     conn = get_db_connection()
-#     cursor = conn.cursor()
-    
-
-#     cursor.execute("""
-#             SELECT * FROM gene_info 
-#             WHERE symbol = ?
-#         """, (gene_name,))
-#     gene = cursor.fetchone()
-
-    
-#     conn.close()
-
-#     if not gene:
-#         return "No gene information", 404
-
-#     return render_template('gene_detail.html', gene=gene)
 def gene(gene_name):
     geneconnect = sqlite3.connect(database_path)
     gene_table = pd.read_sql_query("SELECT * FROM gene_info", geneconnect)
@@ -142,7 +132,10 @@ def gene(gene_name):
         # if gene not found -> key error
         return f"We don't have any information about this gene called {gene_name}"
 
-
+# create route to population statistics page
+@app.route('/population_stats/<population_name>')
+def population(population_name):
+    return render_template('population_stats.html', name=population_name)
 
 
 @app.route("/about")
