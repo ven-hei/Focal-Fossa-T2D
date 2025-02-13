@@ -2,8 +2,13 @@ from flask import Flask, render_template, url_for, redirect, request
 import sqlite3
 import pandas as pd
 import os
+from flask_wtf import FlaskForm
+from wtforms import SearchField, StringField, SubmitField,SelectField,SelectMultipleField,IntegerField,RadioField,widgets
+from wtforms.validators import DataRequired
+
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'f41676960aa9bdaa1122637d89ef298f'
 
 
 # using path of web application as path of database to avoid error when deploy web app
@@ -20,6 +25,18 @@ def get_db_connection():
 @app.route("/")
 def home():
     return render_template('home.html')
+
+class MultiCheckboxField(SelectMultipleField):
+    widget = widgets.ListWidget(prefix_label=False)
+    option_widget = widgets.CheckboxInput()
+
+class SummaryStatsForm(FlaskForm):
+    population = MultiCheckboxField('What population(s) do you want to analyze?')
+    stats_parameter = MultiCheckboxField('Choose parameter(s) for further analysis:',
+                                          choices=[('pi','Pi'),('fst','Fst'),('dxy','Dxy'),('taji',"Tajima's D"),('all','All')],
+                                          )
+    region = IntegerField('What is the region of your interest?',validators=[DataRequired()])
+    submit = SubmitField('Continue >>')
 
 # create new route for search results to show result on new page
 @app.route("/search-result")
@@ -48,7 +65,7 @@ def result():
 
         # change to location search ex 10:100231 in database, not seperate columns
         elif search_option == 'location_search':
-            (chromosome_ID,chromosome_position) = tuple(query.split(':'))
+            # (chromosome_ID,chromosome_position) = tuple(query.split(':'))
             # cursor.execute("""
             #     SELECT STRONGEST_SNP_RISK_ALLELE,P_VALUE, CHR_ID, CHR_POS, MAPPED_GENE FROM association 
             #     WHERE CHR_ID = ? OR CHR_POS LIKE ?
@@ -73,17 +90,19 @@ def result():
             WHERE STRONGEST_SNP_RISK_ALLELE LIKE ? OR REGION LIKE ? OR MAPPED_GENE LIKE ?
             """, (query, query, query))
         populations = cursor.fetchall()
-        conn.close()
-                  
+        conn.close() 
 
-    search_option_dict = {'SNP_search':'SNP',
-                        'location_search': 'location',
-                        'mapped_gene_search': 'mapped gene'}
-        
-    if not search_option or search_option==None:
-            search_option_displayed = 'all'
-    else:
-            search_option_displayed = search_option_dict[search_option]
+    #create dynamic choices from above population       
+    population_values = [dict(row).get('population') for row in populations]
+    population_values = [x for x in population_values if (x!='' and x is not None)]
+    population_choices=[]
+    for population in population_values:
+        population_choices.append((population,population))
+    if len(population_choices)>1:
+        population_choices.append(('all','All'))
+
+    form = SummaryStatsForm()
+    form.population.choices = population_choices 
     
     # add number of results will be displays and split results into multiple page
     number_of_results = len(results)
@@ -97,13 +116,13 @@ def result():
     return render_template('search-result.html', 
                            results_displayed=results_displayed, 
                            query=query, 
-                           search_option_displayed = search_option_displayed,
                            search_option=search_option, 
                            number_of_pages=number_of_pages,
                            number_of_results=number_of_results,
                            page=page,
                            number_of_result_displayed=number_of_result_displayed,
-                           populations = populations) #CHECK exception
+                           populations = populations,
+                           form=form) #CHECK exception
     
 
 # create route for gene function page
@@ -137,10 +156,21 @@ def gene(gene_name):
 def population(population_name):
     return render_template('population_stats.html', name=population_name)
 
-
+# create route to population about page
 @app.route("/about")
 def about():
     return render_template('about.html')
+
+
+@app.route('/summary-stats-result')
+def summary_stats_result():
+    population_for_stats=request.args.getlist('population')
+    parameter_for_stats=request.args.getlist('stats_parameter')
+    region_for_stats=request.args.get('region')
+    return render_template('summary-stats-result.html',
+                           population_for_stats=population_for_stats,
+                           parameter_for_stats=parameter_for_stats,
+                           region_for_stats=region_for_stats)
 
 @app.route('/summary_statistics')
 def sumstats():
