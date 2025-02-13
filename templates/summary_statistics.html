@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Summary Statistics{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/summary_statistics.css') }}">
+
+<div class="main-container d-flex flex-column align-items-center justify-content-center">
+    <h1 class="text-center mb-4">Summary Statistics</h1>
+    
+    <div class="summary-statistics-form bg-light p-4 rounded shadow">
+        <form action="/summary_statistics" method="GET">
+            <!-- Population Selection -->
+            <div class="mb-4">
+                <h3 class="text-center">Choose population(s) of interest:</h3>
+                <div class="d-flex justify-content-center gap-3">
+                    {% for population in populations %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="population" value="{{ population['population'] }}" id="{{ population['population'] }}">
+                        <label class="form-check-label" for="{{ population['population'] }}">{{ population['population'] }}</label>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Summary Statistics Parameters -->
+            <div class="mb-4">
+                <h3 class="text-center">Choose summary statistics parameter(s) of positive selection you want to analyze:</h3>
+                <div class="d-flex justify-content-center gap-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="parameter" value="pi" id="pi">
+                        <label class="form-check-label" for="pi">pi</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="parameter" value="Fst" id="fst">
+                        <label class="form-check-label" for="fst">Fst</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="parameter" value="Tajima’s D" id="tajima">
+                        <label class="form-check-label" for="tajima">Tajima’s D</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="parameter" value="Dxy" id="dxy">
+                        <label class="form-check-label" for="dxy">Dxy</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="parameter" value="All" id="all">
+                        <label class="form-check-label" for="all">All</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Genomic Region Input -->
+            <div class="mb-4">
+                <h3 class="text-center">Enter genomic region for the chosen summary statistics:</h3>
+                <div class="d-flex justify-content-center">
+                    <input type="text" name="genomic_region" class="form-control w-50" placeholder="e.g., 10:1000000-2000000">
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="d-flex justify-content-center">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

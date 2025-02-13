@@ -142,6 +142,21 @@ def population(population_name):
 def about():
     return render_template('about.html')
 
+@app.route('/summary_statistics')
+def sumstats():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    # Query to get distinct populations
+    cursor.execute("SELECT DISTINCT population FROM association")
+    populations = cursor.fetchall()
+    
+    conn.close()
+    
+    # Pass populations to the template
+    return render_template("summary_statistics.html", populations=populations)
+
+
 app.run(host="0.0.0.0", port=81) 
 
 # when deploy webapp, using that:
