@@ -1,0 +1,47 @@
+.summary-statistics-form {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Style the form headings */
+.summary-statistics-form h3 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-size: 1.2em;
+    color: #333;
+}
+
+/* Style the checkboxes and inputs */
+.summary-statistics-form input[type="checkbox"],
+.summary-statistics-form input[type="text"] {
+    margin: 5px 0;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Style the submit button */
+.summary-statistics-form button[type="submit"] {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+.summary-statistics-form button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+/* Add some spacing between form elements */
+.summary-statistics-form div {
+    margin-bottom: 20px;
+}
