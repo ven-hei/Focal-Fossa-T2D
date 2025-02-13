@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %} Population Statistics {% endblock %}
+
+{% block content %}
+    <div class="content">
+        <h1 style="text-align: center;">Summary statistics</h1>
+        <!-- {% for i in population_for_stats %}
+            <p> {{i}} </p>
+        {% endfor %}
+        {% for i in parameter_for_stats %}
+            <p> {{i}} </p>
+        {% endfor %}
+        <p> {{region_for_stats}} </p> -->
+        {{ population_for_stats }}
+        {{ parameter_for_stats }}
+        {{ region_for_stats }}
+
+    </div>
+    
+    
+{% endblock %}

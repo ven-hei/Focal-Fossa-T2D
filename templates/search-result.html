@@ -7,7 +7,18 @@
         <div class="result-heading">
             <div><h2>Search Results</h2></div>
             <div style="display: flex; flex-direction: row; justify-content: space-between;">
-                <div><p>Result for: <i>{{ search_option_displayed}} "{{ query }}"</i></p></div>
+                <div><p>Result for: <i>
+                    {% if search_option == 'SNP_search' %}
+                        SNP
+                    {% elif search_option == 'location_search' %}
+                        location
+                    {% elif search_option == 'mapped_gene_search' %} 
+                        gene
+                    {% else %}
+                        all
+                    {% endif %}
+                    "{{ query }}"
+                </i></p></div>
                 <div><p><a href="/">Back to homepage</a></p></div>
             </div>
             <div>
@@ -116,8 +127,15 @@
             </div>
             {% if populations %}
                     <h5>NOTE</h5>
-                    <p>There are population statistics available for these populations:</p>
-                    {% for pop in populations %}
+                    <p>There are population statistics available for these populations:
+                        {% for pop in populations[:-1] %}
+                            {% if pop.population != 'None' %}
+                                {{ pop.population }},
+                            {% endif %}
+                        {% endfor %}
+                        {{ populations[-1].population}}.
+                    </p>
+                    <!-- {% for pop in populations %}
                     <table>
                         <tr>
                             <td></td>
@@ -128,13 +146,103 @@
                             </td>
                         </tr>
                     </table>
-                    {% endfor %}
+                    {% endfor %} -->
+                    <form action="/summary-stats-result" method="get">
+                        <fieldset>
+                            <legend>{{ form.population.label(class="fs3 fw-bold") }}</legend>
+                            {% for subfield in form.population %}
+                                <input type="checkbox" name="{{ subfield.name }}" value="{{ subfield.data }}" id="{{ subfield.id }}" 
+                                    {% if subfield.data == 'all' %} 
+                                        onclick="toggleSelectAll('population')" 
+                                    {% else %} 
+                                        onclick="uncheckSelectAll('population')" 
+                                    {% endif %} 
+                                >
+                                <label for="{{ subfield.id }}">{{ subfield.label.text }}</label>
+                                <br>
+                            {% endfor %}
+                            <br>
+                            <!-- {{ form.population.label(class="fs2 fw-bold") }}
+                            <br>
+                            {{ form.population}} -->
+                        </fieldset>
+
+                        <dialog id="dialog">
+                            <div>
+                                <fieldset>
+                                    <legend>{{ form.stats_parameter.label(class="fs3 fw-bold") }}</legend>
+                                    {% for subfield in form.stats_parameter %}
+                                        <input type="checkbox" name="{{ subfield.name }}" value="{{ subfield.data }}" id="{{ subfield.id }}" 
+                                            {% if subfield.data == 'all' %} 
+                                                onclick="toggleSelectAll('stats_parameter')" 
+                                            {% else %} 
+                                                onclick="uncheckSelectAll('stats_parameter')" 
+                                            {% endif %} 
+                                        >
+                                        <label for="{{ subfield.id }}">{{ subfield.label.text }}</label>
+                                        <br>
+                                    {% endfor %}
+                                    <br>
+                                    <!-- {{ form.stats_parameter.label(class="fs2 fw-bold") }}
+                                    <br>
+                                    {{ form.stats_parameter}} -->
+                                </fieldset>
+                                <fieldset>
+                                    <legend>{{ form.region.label(class="fs3 fw-bold") }}</legend>
+                                    <br>
+                                    {{ form.region(class="form-control form-control-lg")}}
+                                </fieldset>
+                            </div>
+                            <br>
+                            <div style="display: flex; justify-content: space-around;">
+                                <button class="btn btn-danger" id="js-close"> Close </button>
+                                <button class="btn btn-primary" type="submit">Analyse</button>
+                            </div>
+                        </dialog>
+                    </form>
+                    <p>
+                        <button class="btn btn-primary" id="show-dialog">Continue>></button>
+                    </p>
                 {% endif %}
 
+            
+            <script>
+                const showBtn = document.getElementById("show-dialog");
+                const dialog = document.getElementById("dialog");
+                const jsCloseBtn = dialog.querySelector("#js-close");
+
+                showBtn.addEventListener("click", () => {
+                dialog.showModal();
+                });
+
+                jsCloseBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                dialog.close();
+                });
+            </script>
 
             {% else %}
                 <p>No matching results.</p>
             {% endif %}
         </div>
-    </div>   
+    </div>
+    <script>
+        function toggleSelectAll(fieldName) {
+            let checkboxes = document.querySelectorAll(`input[name="${fieldName}"]`);
+            let selectAll = document.querySelector(`input[name="${fieldName}"][value="all"]`);
+
+            if (selectAll.checked) {
+                checkboxes.forEach(cb => {
+                    if (cb !== selectAll) cb.checked = false;
+                });
+            }
+        }
+
+        function uncheckSelectAll(fieldName) {
+            let selectAll = document.querySelector(`input[name="${fieldName}"][value="all"]`);
+            if (selectAll.checked) {
+                selectAll.checked = false;
+            }
+        }
+    </script>   
 {% endblock %}
