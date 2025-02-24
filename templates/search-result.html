@@ -1,248 +1,38 @@
 {% extends "base.html" %}
 
-{% block title %} Search result {% endblock %}
+{% block title %}Search Results{% endblock %}
 
-{% block content %} 
-    <div class="content">
-        <div class="result-heading">
-            <div><h2>Search Results</h2></div>
-            <div style="display: flex; flex-direction: row; justify-content: space-between;">
-                <div><p>Result for: <i>
-                    {% if search_option == 'SNP_search' %}
-                        SNP
-                    {% elif search_option == 'location_search' %}
-                        location
-                    {% elif search_option == 'mapped_gene_search' %} 
-                        gene
-                    {% else %}
-                        all
-                    {% endif %}
-                    "{{ query }}"
-                </i></p></div>
-                <div><p><a href="/">Back to homepage</a></p></div>
-            </div>
-            <div>
-                <form action="" method="get">
-                    Display
-                    <input type="hidden" name="query" value="{{ query }}">
-                    <input type="hidden" name="search_option" value="{{ search_option }}">
-                    <select name="number_of_result_displayed" onchange="this.form.submit()">
-                        <option value="10" {% if number_of_result_displayed == 10 %} selected {% endif %}>10</option>
-                        <option value="20" {% if number_of_result_displayed == 20 %} selected {% endif %}>20</option>
-                        <option value="50" {% if number_of_result_displayed == 50 %} selected {% endif %}>50</option>
-                        <option value="100" {% if number_of_result_displayed == 100 %} selected {% endif %}>100</option>
-                    </select>
-                    results per page
-                </form>   
-            </div>
-        </div>
-
-        <!-- show table of results  -->
-        <div>
-            {% if results_displayed %}
-            <div>
-                <table class="table table-striped">
-                    <tr>
-                        <th>No</th>
-                        <th>SNP</th>
-                        <th>p-value</th>
-                        <th>Chromosome</th>
-                        <th>Chromosome position</th>
-                        <th>Mapped gene</th>
-                    </tr>
-                    {% for snp in results_displayed %}
-                    <tr>
-                        <td></td>
-                        <td>{{ snp.STRONGEST_SNP_RISK_ALLELE }}</td>
-                        <td>{{ snp.P_VALUE }}</td>
-                        <td>{{ snp.CHR_ID }}</td>
-                        <td>{{ snp.CHR_POS }}</td>
-                        <td>
-                            <a href="/gene/{{ snp.MAPPED_GENE}}" target="_self">
-                                {{ snp.MAPPED_GENE}}
-                            </a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </table>
-            </div>
-            <div style="display: flex; justify-content: space-between;">
-                <div>
-                    <i>Showing 
-
-                    {% if page * number_of_result_displayed <= number_of_results %}
-                        {{ (page-1)*number_of_result_displayed+1 }} - {{ page * number_of_result_displayed }} of {{ number_of_results }}
-                    {% else %}
-                        {{ (page-1)*number_of_result_displayed+1 }} - {{ number_of_results }} of {{ number_of_results }}
-                    {% endif %}
-
-                    results</i>
-                </div>
-                <div> <!-- select page to display -->
-                    {% if number_of_pages >1 %}
-                        {% if page != 1 %}
-                            <a href="/search-result?query={{ query }}&search_option={{ search_option }}&page=1&number_of_result_displayed={{ number_of_result_displayed }}">« First</a>
-                        {% endif %}
-
-                        {% if page > 1 %}
-                            <a href="/search-result?query={{ query }}&search_option={{ search_option }}&page={{ page - 1 }}&number_of_result_displayed={{ number_of_result_displayed }}">	&#60; Previous</a>
-                        {% endif %}
-                        
-
-                        {% if number_of_pages <=5 %}
-                            {% for p in range(1, number_of_pages + 1) %}
-                                {% if p == page %}
-                                    <strong>{{ p }}</strong>
-                                {% else %}
-                                    <a href="/search-result?query={{ query }}&search_option={{ search_option }}&page={{ p }}&number_of_result_displayed={{ number_of_result_displayed }}">{{ p }}</a>
-                                {% endif %}
-                            {% endfor %}
-                        {% else %}
-                            <!-- {% if page != 1 %}
-                                <a href="/search-result?query={{ query }}&search_option={{ search_option }}&page=1&number_of_result_displayed={{ number_of_result_displayed }}">1 .....</a>
-                            {% endif %} -->
-                            {% for p in range(page-2,page+3) %}
-                                {% if p >= 1 and p <= number_of_pages %}
-                                    {% if p == page %}
-                                        <strong>{{ p }}</strong>
-                                    {% else %}
-                                        <a href="/search-result?query={{ query }}&search_option={{ search_option }}&page={{ p }}&number_of_result_displayed={{ number_of_result_displayed }}">{{ p }}</a>
-                                    {% endif %}
-                                {% endif %}
-                            {% endfor %}    
-                            <!-- {% if page != number_of_pages %}
-                                <a href="/search-result?query={{ query }}&search_option={{ search_option }}&page={{ number_of_pages }}&number_of_result_displayed={{ number_of_result_displayed }}">.....{{ number_of_pages }}</a>
-                            {% endif %} -->
-                        {% endif %}
-                        
-                        {% if page < number_of_pages %}
-                            <a href="/search-result?query={{ query }}&search_option={{ search_option }}&page={{ page + 1 }}&number_of_result_displayed={{ number_of_result_displayed }}">Next &#62;</a>
-                        {% endif %}
-
-                        {% if page != number_of_pages %}
-                            <a href="/search-result?query={{ query }}&search_option={{ search_option }}&page={{ number_of_pages }}&number_of_result_displayed={{ number_of_result_displayed }}">Last »</a>
-                        {% endif %}
-                    {% endif %}
-                </div>
-            </div>
-            {% if populations %}
-                    <h5>NOTE</h5>
-                    <p>There are population statistics available for these populations:
-                        {% for pop in populations[:-1] %}
-                            {% if pop.population != 'None' %}
-                                {{ pop.population }},
-                            {% endif %}
-                        {% endfor %}
-                        {{ populations[-1].population}}.
-                    </p>
-                    <!-- {% for pop in populations %}
-                    <table>
-                        <tr>
-                            <td></td>
-                            <td>
-                                <a href="/population_stats/{{ pop.population}}" target="_self">
-                                    {{ pop.population}}
-                                </a>
-                            </td>
-                        </tr>
-                    </table>
-                    {% endfor %} -->
-                    <form action="/summary-stats-result" method="get">
-                        <fieldset>
-                            <legend>{{ form.population.label(class="fs3 fw-bold") }}</legend>
-                            {% for subfield in form.population %}
-                                <input type="checkbox" name="{{ subfield.name }}" value="{{ subfield.data }}" id="{{ subfield.id }}" 
-                                    {% if subfield.data == 'all' %} 
-                                        onclick="toggleSelectAll('population')" 
-                                    {% else %} 
-                                        onclick="uncheckSelectAll('population')" 
-                                    {% endif %} 
-                                >
-                                <label for="{{ subfield.id }}">{{ subfield.label.text }}</label>
-                                <br>
-                            {% endfor %}
-                            <br>
-                            <!-- {{ form.population.label(class="fs2 fw-bold") }}
-                            <br>
-                            {{ form.population}} -->
-                        </fieldset>
-
-                        <dialog id="dialog">
-                            <div>
-                                <fieldset>
-                                    <legend>{{ form.stats_parameter.label(class="fs3 fw-bold") }}</legend>
-                                    {% for subfield in form.stats_parameter %}
-                                        <input type="checkbox" name="{{ subfield.name }}" value="{{ subfield.data }}" id="{{ subfield.id }}" 
-                                            {% if subfield.data == 'all' %} 
-                                                onclick="toggleSelectAll('stats_parameter')" 
-                                            {% else %} 
-                                                onclick="uncheckSelectAll('stats_parameter')" 
-                                            {% endif %} 
-                                        >
-                                        <label for="{{ subfield.id }}">{{ subfield.label.text }}</label>
-                                        <br>
-                                    {% endfor %}
-                                    <br>
-                                    <!-- {{ form.stats_parameter.label(class="fs2 fw-bold") }}
-                                    <br>
-                                    {{ form.stats_parameter}} -->
-                                </fieldset>
-                                <fieldset>
-                                    <legend>{{ form.region.label(class="fs3 fw-bold") }}</legend>
-                                    <br>
-                                    {{ form.region(class="form-control form-control-lg")}}
-                                </fieldset>
-                            </div>
-                            <br>
-                            <div style="display: flex; justify-content: space-around;">
-                                <button class="btn btn-danger" id="js-close"> Close </button>
-                                <button class="btn btn-primary" type="submit">Analyse</button>
-                            </div>
-                        </dialog>
-                    </form>
-                    <p>
-                        <button class="btn btn-primary" id="show-dialog">Continue>></button>
-                    </p>
-                {% endif %}
-
-            
-            <script>
-                const showBtn = document.getElementById("show-dialog");
-                const dialog = document.getElementById("dialog");
-                const jsCloseBtn = dialog.querySelector("#js-close");
-
-                showBtn.addEventListener("click", () => {
-                dialog.showModal();
-                });
-
-                jsCloseBtn.addEventListener("click", (e) => {
-                e.preventDefault();
-                dialog.close();
-                });
-            </script>
-
-            {% else %}
-                <p>No matching results.</p>
-            {% endif %}
-        </div>
-    </div>
-    <script>
-        function toggleSelectAll(fieldName) {
-            let checkboxes = document.querySelectorAll(`input[name="${fieldName}"]`);
-            let selectAll = document.querySelector(`input[name="${fieldName}"][value="all"]`);
-
-            if (selectAll.checked) {
-                checkboxes.forEach(cb => {
-                    if (cb !== selectAll) cb.checked = false;
-                });
-            }
-        }
-
-        function uncheckSelectAll(fieldName) {
-            let selectAll = document.querySelector(`input[name="${fieldName}"][value="all"]`);
-            if (selectAll.checked) {
-                selectAll.checked = false;
-            }
-        }
-    </script>   
+{% block content %}
+<div class="content">
+    <h2>Search Results</h2>
+    <p>Results for query: <strong>{{ query }}</strong></p>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>SNP</th>
+                <th>P-value</th>
+                <th>Chromosome</th>
+                <th>Position</th>
+                <th>Mapped Gene</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for snp in results_displayed %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ snp.STRONGEST_SNP_RISK_ALLELE }}</td>
+                <td>{{ snp.P_VALUE }}</td>
+                <td>{{ snp.CHR_ID }}</td>
+                <td>{{ snp.CHR_POS }}</td>
+                <td>
+                    <a href="{{ url_for('gene_detail', gene_name=snp.MAPPED_GENE) }}">
+                        {{ snp.MAPPED_GENE }}
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}

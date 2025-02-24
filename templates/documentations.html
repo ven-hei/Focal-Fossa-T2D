@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Documentation{% endblock %}
+
+{% block content %}
+<div class="content">
+    <h1>Documentation</h1>
+    <p>Welcome to the documentation page for the SNP database for T2D.</p>
+
+    <h2>How to Use the Website</h2>
+    <p>This web application allows you to search for SNPs, retrieve population statistics, and analyze genetic data.</p>
+
+    <h3>Search Functionality</h3>
+    <ul>
+        <li>Search by SNP ID, chromosome location, or gene name.</li>
+        <li>Filter results based on populations.</li>
+    </ul>
+
+    <h3>Summary Statistics</h3>
+    <p>Users can view summary statistics like Tajima's D and Fst for selected populations.</p>
+
+    <h3>Downloading Results</h3>
+    <p>Click the "Download Summary Statistics" button to save the computed values.</p>
+
+    <a href="{{ url_for('home') }}" class="btn btn-primary">Back to Homepage</a>
+</div>
+{% endblock %}

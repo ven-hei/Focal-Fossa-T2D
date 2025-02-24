@@ -1,22 +1,59 @@
 {% extends "base.html" %}
 
-{% block title %} Population Statistics {% endblock %}
+{% block title %}Summary Statistics Results{% endblock %}
 
 {% block content %}
-    <div class="content">
-        <h1 style="text-align: center;">Summary statistics</h1>
-        <!-- {% for i in population_for_stats %}
-            <p> {{i}} </p>
-        {% endfor %}
-        {% for i in parameter_for_stats %}
-            <p> {{i}} </p>
-        {% endfor %}
-        <p> {{region_for_stats}} </p> -->
-        {{ population_for_stats }}
-        {{ parameter_for_stats }}
-        {{ region_for_stats }}
+<div class="container mt-5 p-4 bg-light shadow rounded">
+    <h1 class="text-center text-primary">Summary Statistics Results</h1>
 
+    {% if results %}
+        {% for pop, stats in results.items() %}
+            <div class="mb-4 p-3 border rounded bg-white">
+                <h3 class="text-secondary">Population: {{ pop }}</h3>
+                
+                {% for stat, value in stats.items() %}
+                    <div class="mt-3">
+                        <h5 class="text-dark">{{ stat }}</h5>
+                        {% if value is not none and "Error" in (value | string) %}  
+                            <p class="text-danger"><strong>Error:</strong> {{ value }}</p>
+                        {% elif stat not in ["Tajima_Plot", "Fst_Plot"] %}
+                            <p>{{ value }}</p>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                <!-- ✅ Corrected Tajima's D Plot Key -->
+                {% if "Tajima_Plot" in stats and stats["Tajima_Plot"] %}
+                <div class="mt-3">
+                    <h5 class="text-dark">Tajima's D Visualization</h5>
+                    <div class="text-center">
+                        <img src="{{ url_for('static', filename=stats['Tajima_Plot'].split('static/')[-1]) }}" 
+                             class="img-fluid rounded shadow" 
+                             alt="Tajima's D Plot for {{ pop }}">
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- ✅ Fst Plot Display -->
+                {% if "Fst_Plot" in stats and stats["Fst_Plot"] %}
+                <div class="mt-3">
+                    <h5 class="text-dark">Fst Visualization</h5>
+                    <div class="text-center">
+                        <img src="{{ url_for('static', filename=stats['Fst_Plot'].split('static/')[-1]) }}" 
+                             class="img-fluid rounded shadow" 
+                             alt="Fst Plot for {{ pop }}">
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <p class="text-center text-danger">No summary statistics available for the selected populations.</p>
+    {% endif %}
+
+    <div class="text-center mt-4">
+        <a href="{{ url_for('summary_statistics') }}" class="btn btn-secondary">Back</a>
+        <a href="{{ url_for('download_summary') }}" class="btn btn-primary">Download Summary Statistics</a>
     </div>
-    
-    
+</div>
 {% endblock %}
