@@ -5,64 +5,115 @@
 {% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/summary_statistics.css') }}">
 
-<div class="main-container d-flex flex-column align-items-center justify-content-center">
-    <h1 class="text-center mb-4">Summary Statistics</h1>
-    
-    <div class="summary-statistics-form bg-light p-4 rounded shadow">
-        <form action="/summary_statistics" method="GET">
-            <!-- Population Selection -->
-            <div class="mb-4">
-                <h3 class="text-center">Choose population(s) of interest:</h3>
-                <div class="d-flex justify-content-center gap-3">
-                    {% for population in populations %}
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="population" value="{{ population['population'] }}" id="{{ population['population'] }}">
-                        <label class="form-check-label" for="{{ population['population'] }}">{{ population['population'] }}</label>
-                    </div>
+<div class="summary-stats-alert">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+
+            {% for message in messages %}
+                <div class="alert alert-warning" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>
+
+<div class = "summary-statistics-form">
+    <div class="main-container d-flex flex-column align-items-center justify-content-center">
+        <h1 class="text-center mb-4">Summary Statistics</h1>
+        
+        <div class="summary-statistics-form bg-light p-4 rounded shadow">
+            <form action="/summary-stats-result" method="get">
+                <fieldset>
+                    <p><b>{{ form.population.label }}</b></p>
+                    <div style="display: flex; flex-direction: row; column-gap: 50px; justify-content: space-between;">
+                        {% for subfield in form.population %}
+                        <div>
+                            <input type="checkbox" name="{{ subfield.name }}" value="{{ subfield.data }}" id="{{ subfield.id }}" 
+                            {% if subfield.data == 'all' %} 
+                                onclick="toggleSelectAll('population')" 
+                            {% else %} 
+                                onclick="uncheckSelectAll('population')" 
+                            {% endif %} >
+                        <label for="{{ subfield.id }}">{{ subfield.label.text }}</label>
+                        </div>
                     {% endfor %}
+                    </div>
+                </fieldset>
+                <br>
+                <fieldset>
+                    <p><b>{{ form.stats_parameter.label }}</b></p>
+                    <div style="display: flex; flex-direction: row; column-gap: 50px">
+                        {% for subfield in form.stats_parameter %}
+                        <div>
+                            <input type="checkbox" name="{{ subfield.name }}" value="{{ subfield.data }}" id="{{ subfield.id }}" 
+                            {% if subfield.data == 'all' %} 
+                                onclick="toggleSelectAll('stats_parameter')" 
+                            {% else %} 
+                                onclick="uncheckSelectAll('stats_parameter')" 
+                            {% endif %} >
+                        <label for="{{ subfield.id }}">{{ subfield.label.text }}</label>
+                        </div>
+                    {% endfor %}
+                    </div>
+                </fieldset>
+                <br>
+                <fieldset>
+                    {{form.calculate_option.label(style="display: none")}}
+                    {{form.calculate_option(style="display: none")}}
+                </fieldset>
+                <fieldset>
+                    <div style="display: flex;flex-direction: row;column-gap: 50px; justify-content: space-between;">
+                        <div>
+                            {{ form.chromosome_no.label(class="fs3 fw-bold") }}
+                            {{ form.chromosome_no(class="form-control form-control-lg") }}
+                        </div>
+                        <div>
+                            {{ form.start_position.label(class="fs3 fw-bold") }}
+                            {{ form.start_position (class="form-control form-control-lg") }}
+                        </div>
+                        <div>
+                            {{ form.end_position.label(class="fs3 fw-bold") }}
+                            {{ form.end_position (class="form-control form-control-lg") }}
+                        </div>
+                    </div>
+                    <div>
+                        {{ form.window_size.label(class="fs3 fw-bold") }}
+                        {{ form.window_size(class="form-control form-control-lg",default=false) }}
+                    </div>
+                    
+                </fieldset>
+                <br>
+                <div style="text-align: center;">
+                    <button class="btn btn-primary" type="submit" >Analyse</button>
                 </div>
-            </div>
-
-            <!-- Summary Statistics Parameters -->
-            <div class="mb-4">
-                <h3 class="text-center">Choose summary statistics parameter(s) of positive selection you want to analyze:</h3>
-                <div class="d-flex justify-content-center gap-3">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="parameter" value="pi" id="pi">
-                        <label class="form-check-label" for="pi">pi</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="parameter" value="Fst" id="fst">
-                        <label class="form-check-label" for="fst">Fst</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="parameter" value="Tajima’s D" id="tajima">
-                        <label class="form-check-label" for="tajima">Tajima’s D</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="parameter" value="Dxy" id="dxy">
-                        <label class="form-check-label" for="dxy">Dxy</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="parameter" value="All" id="all">
-                        <label class="form-check-label" for="all">All</label>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Genomic Region Input -->
-            <div class="mb-4">
-                <h3 class="text-center">Enter genomic region for the chosen summary statistics:</h3>
-                <div class="d-flex justify-content-center">
-                    <input type="text" name="genomic_region" class="form-control w-50" placeholder="e.g., 10:1000000-2000000">
-                </div>
-            </div>
-
-            <!-- Submit Button -->
-            <div class="d-flex justify-content-center">
-                <button type="submit" class="btn btn-primary">Submit</button>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
 </div>
+
+
+<script>
+
+    // define function for users choose 'all' option it will uncheck above option
+    function toggleSelectAll(fieldName) {
+        let checkboxes = document.querySelectorAll(`input[name="${fieldName}"]`);
+        let selectAll = document.querySelector(`input[name="${fieldName}"][value="all"]`);
+
+        if (selectAll.checked) {
+            checkboxes.forEach(cb => {
+                if (cb !== selectAll) cb.checked = false;
+            });
+        }
+    }
+
+    // define function for users uncheck 'all' option it will allow users start over
+    function uncheckSelectAll(fieldName) {
+        let selectAll = document.querySelector(`input[name="${fieldName}"][value="all"]`);
+        if (selectAll.checked) {
+            selectAll.checked = false;
+        }
+    }
+
+</script>
 {% endblock %}

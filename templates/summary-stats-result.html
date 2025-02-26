@@ -3,20 +3,153 @@
 {% block title %} Population Statistics {% endblock %}
 
 {% block content %}
-    <div class="content">
-        <h1 style="text-align: center;">Summary statistics</h1>
-        <!-- {% for i in population_for_stats %}
-            <p> {{i}} </p>
-        {% endfor %}
-        {% for i in parameter_for_stats %}
-            <p> {{i}} </p>
-        {% endfor %}
-        <p> {{region_for_stats}} </p> -->
-        {{ population_for_stats }}
-        {{ parameter_for_stats }}
-        {{ region_for_stats }}
+<div class="content">
+    <h1 style="text-align: center;">Summary statistics</h1>
 
+    <div class="accordion" id="accordionPanelsStayOpenExample">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="panelsStayOpen-headingOne">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+                    <h3>Information about choosen population(s)</h3>
+                </button>
+            </h2>
+            <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingOne">
+                <div class="accordion-body">
+                    {% if 'BEB' in population_for_stats %}
+                        <h4>{{ population_abbr['BEB']}} (BEB):</h4>
+                        <h6>Available samples</h6>
+                        <p>This population includes 86 samples: 42 males and 44 females.</p>
+                        <h6>Population description</h6>
+                        <p>These cell lines and DNA samples were prepared from blood samples collected from people living in Bangladesh. All individuals identified themselves as having four Bengali grandparents.</p>
+                        <h6>Principal Investigators</h6>
+                        <ul>
+                            <li>Firdausi Qadri - <em>International Centre for Diarrhoeal Disease Research, Dhaka, Bangladesh</em></li>
+                        </ul>
+                        <ul>
+                            <li>Regina LaRocque - <em>Massachusetts General Hospital, Boston, MA</em></li>
+                        </ul>
+                        <ul>
+                            <li>Pardis Sabeti - <em>Broad Institute, Boston, MA</em><br /></li>
+                        </ul>
+                    {% endif %}
+                    {% if 'GIH' in population_for_stats %}
+                        <h4>{{ population_abbr['GIH']}} (GIH):</h4>
+                        <h6>Available samples</h6>
+                        <p>This population includes 103 samples: 56 males and 47 females.</p>
+                        <h6>Population description</h6>
+                        <p>These cell lines and DNA samples were prepared from blood samples collected from people living in the Houston, Texas metropolitan area. All of the samples are from unrelated individuals who identified themselves as Gujarati and reported having at least three out of four Gujarati grandparents. "Gujarati" is a general term used to describe people who trace their ancestry to the region of Gujarat, located in the northwestern part of the Indian subcontinent, and who speak the Gujarati language. However, no attempt was made to clarify the meaning that donors attributed to their self-reported Gujarati identity.</p>
+                        <h6>Principal Investigators</h6>
+                        <ul>
+                            <li>Richard Sharp - <em>Baylor College of Medicine, Houston, TX, USA</em></li>
+                        </ul>
+                        <ul></ul>
+                    {% endif %}
+                    {% if 'ITU' in population_for_stats %}
+                        <h4>{{ population_abbr['ITU']}} (ITU):</h4>
+                        <h6>Available samples</h6>
+                        <p>This population includes 102 samples: 59 males and 43 females.</p>
+                        <h6>Population description</h6>
+                        These cell lines and DNA samples were prepared from blood samples collected from people living in the United Kingdom who identified themselves and their parents as Telugu.
+                        <h6>Principal Investigators</h6>
+                        <ul>
+                            <li>Jaspal Kooner -<em> Imperial College, London, U.K.</em><br /></li>
+                        </ul>
+                    {% endif %}
+                    {% if 'PJL' in population_for_stats %}
+                        <h4>{{ population_abbr['PJL']}} (PJL):</h4>
+                        <h6>Available samples</h6>
+                        <p>This population includes 96 samples: 48 males and 48 females.</p>
+                        <h6>Population description</h6>
+                        These cell lines and DNA samples were prepared from blood samples collected from people living in Lahore, Pakistan who identified themselves and their parents as Punjabi.
+                        <h6>Principal Investigators</h6>
+                        <ul>
+                            <li>Danish Saleheen -<em> Center for Non-Communicable Diseases, Karachi, Pakistan &amp; University of Pennsylvania, USA </em></li>
+                            <li>Asif Rasheed -<em> Center for Non-Communicable Diseases, Karachi, Pakistan</em></li>
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
     </div>
-    
-    
+
+    <div class="accordion" id="accordionExample">
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingOne">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                <h3>The summary statistics of the given region {{ chromosome_no }}:{{ start_position }}-{{ end_position }}</h3>
+            </button>
+          </h2>
+          <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+                {% if 'tajimas_d' in stats_metric %}
+                <table class="plot-table"> 
+                    <tr>
+                        <th>
+                            <div>
+                                <h5>Tajima's D:</h3>
+                            </div>
+        
+                        </th>
+                        <th>
+                            <div style="text-align: right;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+                                    <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/>
+                                    <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708z"/>
+                                </svg>
+                                <a href="static/download/summary_statistics(tajimas_d).txt" download> Download summary statistics file for Tajima's D</a>
+                            </div>
+                        </th>
+                    </tr>
+                    {% for pop in population_for_stats %}
+                        <tr>
+                            <td>
+                                <h6>{{ population_abbr[pop] }}</h6>
+                            </td>
+                            <td>
+                                <div>
+                                    <img style="width: 100%;" src="static/plots/plot_tajimas_d_{{ pop }}.png" alt="Tajima's D plot for {{ pop }}">
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% endif %}
+        
+            {% if 'fst' in stats_metric %}
+                <table class="plot-table">
+                    <tr>
+                        <th>
+                            <div>
+                                <h5>Fixation index (FST):</h5>
+                            </div>
+                            <div>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+                                    <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/>
+                                    <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708z"/>
+                                </svg>
+                                <a href="static/download/summary_statistics(fst).txt" download> Download summary statistics file for Tajima's D</a>
+                            </div>
+                        </th>
+                        <th></th>
+                    </tr>
+                    {% for pop in population_for_stats %}
+                        <tr>
+                            <td>
+                                <h6>{{ population_abbr[pop] }}</h6>
+                            </td>
+                            <td>
+                                <div>
+                                    <img style="width: 100%;" src="static/plots/plot_fst_{{ pop }}.png" alt="Tajima's D plot for {{ pop }}">
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+</div>
+
 {% endblock %}
