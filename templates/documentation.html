@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %} 
+About page
+{% endblock %}
+
+{% block content %} 
+<head>
+    <meta charset="UTF-8">
+    <title>About | Gene Search Portal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+
+
+<body>
+
+    <header>
+        <h1>About the webapp</h1>
+        <p>lol i cant believe im doing this</p>
+    </header>
+
+    <div>
+        <h2> What is this project?</h2>
+        <p>
+            blah blah blah
+        </p>
+    </div>
+
+    <div>
+        <h2>Why did we build this?</h2>
+        <p>
+            blah blah blah
+        </p>
+    </div>
+
+    <div>
+        <h2>Meet the Team!!!</h2>
+        <p>
+            this is who we are
+        </p>
+    </div>
+
+    <section>
+        <h2>Technologies Used</h2>
+        <ul>
+            <li><strong>Python (Flask)</strong> - Frontend and backend framework</li>
+            <li><strong>SQLite & Pandas</strong> - Data storage and analysis</li>
+            <li><strong>HTML, CSS</strong> - User Interface</li>
+        </ul>
+    </section>
+
+
+    <section>
+        <h2>Where To Find Us</h2>
+        <p>GitHub: <a href="https://github.com/ven-hei/Focal-Fossa-T2D">Focal Fossa T2D</a></p>
+    </section>
+
+    <footer>
+        <p>&copy; Focal Fossa. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>
+
+
+{% endblock %}

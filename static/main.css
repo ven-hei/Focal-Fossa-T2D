@@ -10,6 +10,9 @@ p, ul, li {
     margin: 0;
     padding: 0;
 }
+legend {
+    font-size: 15px;
+}
 .header {
     background-color: rgb(10, 57, 125);
     height: 80px;
@@ -19,7 +22,7 @@ p, ul, li {
 }
 .header1 {
     width: 300px;
-    margin-left: 20px;
+    margin-left: 50px;
 
 }
 .web-logo {
@@ -27,12 +30,12 @@ p, ul, li {
     width: auto;
 }
 .header3 {
-    min-width: 500px;
-    width: 500px;
+    min-width: 700px;
     color:white;
     display: flex;
-    justify-content: center;
+    justify-content: right;
     align-items: center;
+    margin-right: 30px;
 }
 .header3 ul {
     list-style: none;
@@ -59,14 +62,15 @@ p, ul, li {
 .footer {
     display: flex;
     flex-direction: row;
-    height: 120px;
+    height: 150px;
     background-color: rgb(10, 57, 125);
     padding: 0px 100px;
     color: white;
     column-gap: 20px;
 }
 .footer-left {
-    width: 500px;
+    min-width: 400px;
+    width: 400px;
 }
 .footer-center {
     display: flex;
@@ -75,7 +79,7 @@ p, ul, li {
     align-items: center;
 }
 .footer-right {
-    width: 500px;
+    min-width: 400px;
     text-align: right;
 }
 .footer-right h4 {
@@ -83,23 +87,48 @@ p, ul, li {
 }
 .footer-right ul{
     list-style: none;
+    vertical-align: bottom;
+    line-height: 30px;
+}
+.footer-right ul li a{
+    color: white;
+    text-decoration: none;
+    padding-right: 10px;
+}
+.main-container {
+    min-width: 800px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
 }
 .main-homepage {
     color: white;
     background-image: url(images/background-pic.jpg);
     background-size: cover;
     background-position: center;
-    height: calc(100vh - 200px);    
+    display: flex;
+    height: 100%;
+    flex-direction: column;    
+}
+.homepage-alert{
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
 }
 .homepage-content {
+    flex: 3;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: top;
 }
 .search-section {
     display: grid;
     text-align: center;
+}
+.search-section a{
+    color:white;
 }
 .search-box {
     width: 400px;
@@ -125,9 +154,34 @@ p, ul, li {
     margin: 0 auto;
 
 }
-.result-heading {
-    margin: 20px 0;
+.result-page {
+    margin: 20px 50px;
+    display: flex;
+    column-gap: 50px;
 }
-.result-heading h2 {
-    text-align: center;
+.stats-container {
+    width: 400px;
+    min-width: 300px;
+    font-size: 15px;
+}
+.result-container {
+    width: 100%;
+}
+
+.summary-stats-alert{
+    display: flex;
+    height: 100px;
+    justify-content: center;
+    align-items: center;
+}
+.gene-table td,th{
+    min-width: 200px;
+}
+
+.plot-table td {
+    vertical-align: top;
+}
+
+.plot-table td, th{
+    min-width: 300px;
 }
