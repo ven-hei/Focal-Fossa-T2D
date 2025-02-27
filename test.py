@@ -46,29 +46,40 @@
 
 # print("Done")
 
-import os
-import sqlite3
+# import os
+# import sqlite3
 
-gene_name = input("Enter gene name: ")
+# gene_name = input("Enter gene name: ")
 
-app_path = os.path.dirname(os.path.abspath(__file__))
-database_path = os.path.join(app_path, "Database/t2d.db")
+# app_path = os.path.dirname(os.path.abspath(__file__))
+# database_path = os.path.join(app_path, "Database/t2d.db")
 
-def get_db_connection():
-    conn = sqlite3.connect(database_path)
-    conn.row_factory = sqlite3.Row
-    return conn
+# def get_db_connection():
+#     conn = sqlite3.connect(database_path)
+#     conn.row_factory = sqlite3.Row
+#     return conn
 
-conn=get_db_connection()
-cursor = conn.cursor()
-cursor.execute("""SELECT * FROM gene WHERE ensembl_acc_code = ?""",(gene_name,))
-gene_info = cursor.fetchone()
-gene_info = list(gene_info)
-conn.close()
+# conn=get_db_connection()
+# cursor = conn.cursor()
+# cursor.execute("""SELECT * FROM gene WHERE ensembl_acc_code = ?""",(gene_name,))
+# gene_info = cursor.fetchone()
+# gene_info = list(gene_info)
+# conn.close()
 
-if gene_info[2]:
-    a=list(gene_info[2].split(". "))
-    gene_info[2] = '.\n\t- '.join(a)
-    gene_info=tuple(gene_info)
+# if gene_info[2]:
+#     a=list(gene_info[2].split(". "))
+#     gene_info[2] = '.\n\t- '.join(a)
+#     gene_info=tuple(gene_info)
 
-print(gene_info[2])
+# print(gene_info[2])
+
+A = ['a', 'b', 'c','d']
+B = A[::]
+
+# for i in A:
+#     B.remove(i)
+#     for j in B:
+#         print(i, j)
+for i in range(len(A)):
+    for j in range(i+1, len(A)):
+        print(A[i], A[j])
