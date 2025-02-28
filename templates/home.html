@@ -53,8 +53,42 @@
                         </tr>
                     </table>
                 </form> 
-        </div>  
+        </div> 
     </div>
+    <div>
+        <link rel="stylesheet" href="/static/update.css">
+        <body>
+            <div style="padding-left: 20px">
+                <form class="update_form" method="POST" action="/update_db" onsubmit="startLoading()">
+                    <button class="update_button" id="button--loading" type="submit">
+                        <span class="button__text">Update database</span>
+                    </button>
+                    <dialog id="updating">
+                        <p>Updating...</p>
+                        <p>It will take up to an hour. Please be patient</p>
+                        <div class="progress" role="progressbar" aria-label="Animated striped example" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 100%"></div>
+                        </div>
+                    </dialog>
+                </form>
+                <p>Database last updated: {{ last_updated }}</p>
+            </div>
+    
+            <script>
+                function startLoading() {
+                    const confirmUpdate = confirm("This process can take up to an hour. Do you want to proceed?");
+                    if (!confirmUpdate){
+                        return false;
+                    }
+                    const button = document.getElementById("button--loading");
+                    button.classList.add("update_button--loading"); // Apply loader animation
+                    button.disabled = true; // Disable button
+                    document.getElementById("updating").showModal(); // Show dialog box
+                }
+            </script>
+        </body>
+    </div>
+     
 
 </div>
 {% endblock %}
