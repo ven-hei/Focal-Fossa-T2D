@@ -64,7 +64,7 @@ legend {
     flex-direction: row;
     height: 150px;
     background-color: rgb(10, 57, 125);
-    padding: 0px 100px;
+    padding: 10px 100px;
     color: white;
     column-gap: 20px;
 }
@@ -177,11 +177,28 @@ legend {
 .gene-table td,th{
     min-width: 200px;
 }
-
+.plot-table {
+    width: 100%;
+}
 .plot-table td {
     vertical-align: top;
+    min-width: 300px;
 }
 
-.plot-table td, th{
-    min-width: 300px;
+.plot-table th{
+    background-color: rgb(26, 106, 255);
+    padding: 10px 10px;
+    color: white;
+}
+
+.plot-table a{
+    color: white;
+    text-decoration: none;
+}
+
+.population_title {
+    width: 100%; 
+    color:white;
+    padding:10px 10px;
+    background-color: rgb(26, 106, 255);
 }

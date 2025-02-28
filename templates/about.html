@@ -1,65 +1,149 @@
 {% extends "base.html" %}
 
-{% block title %} 
-About page
-{% endblock %}
+{% block title %}About This Project{% endblock %}
 
-{% block content %} 
-<head>
-    <meta charset="UTF-8">
-    <title>About | Gene Search Portal</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+{% block content %}
+<style>
+    .about-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto auto;
+        gap: 0;
+        min-height: 100vh;
+    }
+    
+    .section {
+        padding: 50px;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
 
+    .section h1, .section h2 {
+        font-size: 2rem;
+    }
 
-<body>
+    .section p {
+        font-size: 1.2rem;
+        line-height: 1.6;
+    }
 
-    <header>
-        <h1>About the webapp</h1>
-        <p>lol i cant believe im doing this</p>
-    </header>
+    .section-light { background-color: #FDD7E4; color: black; }  /* Light Pink */
+    .section-dark { background-color: #FF6B6B; }  /* Coral Red */
+    .section-deep { background-color: #6A5ACD; }  /* Soft Purple */
+    .section-white { background-color: white; color: black; padding: 60px; }
 
-    <div>
-        <h2> What is this project?</h2>
-        <p>
-            blah blah blah
-        </p>
+    .section-image {
+        background-size: cover;
+        background-position: center;
+    }
+
+    .section-text {
+        max-width: 80%;
+    }
+
+    .vertical-text {
+        writing-mode: vertical-rl;
+        text-orientation: upright;
+        font-size: 2rem;
+        font-weight: bold;
+    }
+
+    @media (max-width: 768px) {
+        .about-container {
+            grid-template-columns: 1fr;
+            grid-template-rows: auto;
+        }
+    }
+</style>
+
+<div class="about-container">
+    <!-- Welcome Section -->
+    <div class="section section-light">
+        <div class="section-text">
+            <h1>Welcome</h1>
+            <p>A prototype database for understanding the evolutionary genetic basis of Type 2 Diabetes.</p>
+        </div>
     </div>
 
-    <div>
-        <h2>Why did we build this?</h2>
-        <p>
-            blah blah blah
-        </p>
+<!-- Project Background -->
+<div class="section section-white">
+    <div class="section-text">
+        <h2>Our Mission</h2>
+        <p>This project integrates genomic, functional, and clinical data to provide insights into how evolutionary processes have shaped T2D susceptibility in different South Asian populations.</p>
+    </div>
+</div>
+
+    <!-- Vertical "About Us" Text -->
+    <div class="section section-dark">
+        <span class="vertical-text">About us</span>
     </div>
 
-    <div>
-        <h2>Meet the Team!!!</h2>
-        <p>
-            this is who we are
-        </p>
+    <div class="section section-deep">
+        <div class="section-text">
+            <h2>Data Sources</h2>
+            <p>We use data from leading research sources including <a href="https://www.ensembl.org/index.html">Ensembl</a>, <a href="https://t2d.hugeamp.org">T2D Knowledge Portal</a>, <a href="https://www.ncbi.nlm.nih.gov">NCBI</a> and <a href="https://www.ebi.ac.uk/gwas/">GWAS Catalog</a>.</p>
+        </div>
     </div>
 
-    <section>
-        <h2>Technologies Used</h2>
-        <ul>
-            <li><strong>Python (Flask)</strong> - Frontend and backend framework</li>
-            <li><strong>SQLite & Pandas</strong> - Data storage and analysis</li>
-            <li><strong>HTML, CSS</strong> - User Interface</li>
-        </ul>
-    </section>
+    <!-- Features Section -->
+    <div class="section section-white">
+        <div class="section-text">
+            <h2>Key Features</h2>
+            <p>
+                <ul>
+                <li>Retrieve genetic variant data for T2D.</li>
+                <li>Analyze selection metrics in South Asian populations.</li>
+                <li>Visualize genomic data with interactive plots.</li>
+                <li>Download summary statistics for further research.</li>
+                </ul>
+            </p>
+        </div>
+    </div>
 
+    
 
-    <section>
-        <h2>Where To Find Us</h2>
-        <p>GitHub: <a href="https://github.com/ven-hei/Focal-Fossa-T2D">Focal Fossa T2D</a></p>
-    </section>
+    <!-- Acknowledgment Section -->
+    <div class="section section-image" style="background-image: url('/static/images/lab-research.jpg');"></div>
 
-    <footer>
-        <p>&copy; Focal Fossa. All rights reserved.</p>
-    </footer>
-
-</body>
-</html>
-
-
+    <div class="section section-light">
+        <div class="section-text">
+            <h2>Acknowledgments</h2>
+            <p>Developed as part of the MSc Bioinformatics Software Development Project at Queen Mary University of London.</p>
+            
+        </div>
+    </div>
+    <!--The Team Section-->
+    <div class="section section-deep">
+        <div>
+            <h2>Team</h2>
+            <div class="section-text">
+                <p><ul style="list-style: none; padding: 0;">
+                    <li style="display: flex; align-items: center; gap: 10px;">
+                        <img src="{{ url_for('static', filename='images/user-icon.jpeg') }}" class="w3-circle" alt="Vaia" width="50" height="50">
+                        <span>Vaia</span>
+                    </li>
+                    <li style="display: flex; align-items: center; gap: 10px;">
+                        <img src="{{ url_for('static', filename='images/user-icon.jpeg') }}" class="w3-circle" alt="Venla" width="50" height="50">
+                        <span>Venla</span>
+                    </li>
+                    <li style="display: flex; align-items: center; gap: 10px;">
+                        <img src="{{ url_for('static', filename='images/user-icon.jpeg') }}" class="w3-circle" alt="Hannan" width="50" height="50">
+                        <span>Hannan</span>
+                    </li>
+                    <li style="display: flex; align-items: center; gap: 10px;">
+                        <img src="{{ url_for('static', filename='images/user-icon.jpeg') }}" class="w3-circle" alt="Linh" width="50" height="50">
+                        <span>Linh</span>
+                    </li>
+                    <li style="display: flex; align-items: center; gap: 10px;">
+                        <img src="{{ url_for('static', filename='images/user-icon.jpeg') }}" class="w3-circle" alt="Sammi" width="50" height="50">
+                        <span>Sammi</span>
+                    </li>
+                </ul></p>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
