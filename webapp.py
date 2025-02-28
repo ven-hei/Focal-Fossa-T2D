@@ -10,6 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import datetime
+import subprocess
 
 
 app = Flask(__name__)
@@ -17,7 +18,7 @@ app.config['SECRET_KEY'] = 'f41676960aa9bdaa1122637d89ef298f'
 
 # using path of web application as path of database to avoid error when deploy web app
 app_path = os.path.dirname(os.path.abspath(__file__))
-database_path = os.path.join(app_path, "Database/t2d.db")
+database_path = os.path.join(app_path, "Database/t2d_v2.db")
 
 # Connect to available database
 def get_db_connection():
@@ -25,10 +26,28 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
+def last_update_db():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    last_update_sql = """SELECT MAX(date) FROM accessed;""" # technically this line works since the dates will get bigger each time
+    cursor.execute(last_update_sql)
+    last_updated = cursor.fetchone()
+    last_updated = last_updated[0]
+    return last_updated
+
 # create a route for the home page
 @app.route("/")
 def home():
-    return render_template('home.html')
+    last_update = last_update_db()
+    return render_template('home.html', last_updated = last_update)
+
+@app.route("/update_db", methods = ["POST"])
+def update_db():
+    try:
+        subprocess.run(["python", "database_script.py"], check = True)
+    except Exception as e:
+        return render_template("home.html", message = "Error updating database", last_updated = last_update_db())
+    return redirect(url_for("home"))
 
 # create a custom multi checkbox field
 class MultiCheckboxField(SelectMultipleField):

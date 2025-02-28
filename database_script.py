@@ -6,8 +6,9 @@ import os
 import requests
 import json
 
+#print("start")
 # Connecting to sqlite
-conn = sqlite3.connect('Database/focal_fossa.db')
+conn = sqlite3.connect('Database/t2d_v2.db')
  
 # cursor object
 cursor = conn.cursor()
@@ -20,6 +21,8 @@ last_update = last_update[0]
 
 # checking user's date
 today = datetime.datetime.now().strftime("%Y-%m-%d")
+
+#print("here 1")
 
 # update based on the updates in the original source (GWAS)
 if last_update != today:
@@ -50,6 +53,7 @@ if last_update != today:
     else:
         print(f"Error: {response.status_code}")
 
+#    print("here 2")
     # open the json file
     json_data = open("data.json") # change to data when using the actual data
 
@@ -61,7 +65,7 @@ if last_update != today:
                 last_update VARCHAR(50)
             ); """)
     conn.commit()
-
+#    print("here 3")
     # collect the update dates from json and add them to the temporary table
     associations = data["_embedded"]["associations"]
 
@@ -88,7 +92,7 @@ if last_update != today:
                             VALUES (?, ?)""", 
                             (rs_id, update))
             conn.commit()
-
+#    print("here 4")
     # compare snp table in t2d and the temporary updates table to see if there are any changes
     compare_tables = cursor.execute("""SELECT rs_id, last_update FROM snp
                         EXCEPT
@@ -105,6 +109,10 @@ if last_update != today:
     update_check = len(num_updates)
 
     conn.execute("DROP TABLE updates")
+    
+    cursor.execute("INSERT INTO accessed (date) VALUES (?)", (today,))
+    conn.commit()
+#    print("here 5")
 
     # If the database is not updated the the old snp table will be removed and new one will be generated. 
     # The gene table will be checked based on the updated snp table
@@ -123,8 +131,9 @@ if last_update != today:
                 ); """
         
         cursor.execute(snp_table)
-        cursor.execute("INSERT INTO accessed (date) VALUES (?)", (today,))
         conn.commit()
+
+#        print("here 6")
 
         # going through the json file and parsing the needed info from it
         for association in associations:
@@ -191,6 +200,8 @@ if last_update != today:
                 json_loci_data.close()
                 os.remove(file_loci)
 
+#    print("here 7")
+
     # checking if there are differences between teh genes in snp table and gene table in order to update the gene table
     not_in_table = cursor.execute("""SELECT DISTINCT ensembl_acc_code FROM snp
                         EXCEPT
@@ -222,3 +233,4 @@ if last_update != today:
 
 # closing the connection to the database
 conn.close()
+#print("all done")

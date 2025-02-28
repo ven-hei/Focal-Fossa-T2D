@@ -3,7 +3,7 @@ import sqlite3
 ### First time creating the tables in the database
 
 # connection to the database
-conn = sqlite3.connect('Database/focal_fossa.db')
+conn = sqlite3.connect('Database/t2d.db')
 cursor = conn.cursor()
 
 # defining the content of each table
@@ -21,6 +21,9 @@ gene_table = """ CREATE TABLE gene (
             symbol VARCHAR(100) NOT NULL,
             full_name VARCHAR(255),
             description TEXT,
+            chromosome INT, 
+            start_pos INT, 
+            end_pos INT,
             ensembl_acc_code VARCHAR(50),
             NCBI_gene_ID INT,
             uniprot_ID VARCHAR(30)
