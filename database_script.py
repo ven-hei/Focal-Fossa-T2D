@@ -8,7 +8,7 @@ import json
 
 #print("start")
 # Connecting to sqlite
-conn = sqlite3.connect('Database/t2d_v2.db')
+conn = sqlite3.connect('Database/t2d_v3.db')
  
 # cursor object
 cursor = conn.cursor()
