@@ -46,7 +46,7 @@ def home():
 @app.route("/update_db", methods = ["POST"])
 def update_db():
     try:
-        subprocess.run(["python", "database_script.py"], check = True)
+        subprocess.run(["python", "Database_scripts/database_script.py"], check = True)
     except Exception as e: # if update is unsuccessful error will be returned to the user
         return render_template("home.html", message = "Error updating database", last_updated = last_update_db())
     return redirect(url_for("home"))
