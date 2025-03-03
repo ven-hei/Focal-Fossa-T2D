@@ -18,7 +18,7 @@ app.config['SECRET_KEY'] = 'f41676960aa9bdaa1122637d89ef298f'
 
 # using path of web application as path of database to avoid error when deploy web app
 app_path = os.path.dirname(os.path.abspath(__file__))
-database_path = os.path.join(app_path, "Database/t2d.db")
+database_path = os.path.join(app_path, "Database/t2d_v3.db")
 
 
 # Connect to available database
@@ -42,11 +42,12 @@ def home():
     last_update = last_update_db()
     return render_template('home.html', last_updated = last_update)
 
+# create a route for updating the database
 @app.route("/update_db", methods = ["POST"])
 def update_db():
     try:
         subprocess.run(["python", "database_script.py"], check = True)
-    except Exception as e:
+    except Exception as e: # if update is unsuccessful error will be returned to the user
         return render_template("home.html", message = "Error updating database", last_updated = last_update_db())
     return redirect(url_for("home"))
 
@@ -102,9 +103,10 @@ def result():
 
         if search_option == 'SNP_search':
             cursor.execute("""
-                SELECT rs_id, location, p_value, ensembl_acc_code FROM snp
-                WHERE rs_id LIKE ?
-                ORDER BY rs_id
+                SELECT a.rs_id, a.location, a.p_value, b.symbol FROM snp a
+                INNER JOIN gene b ON a.ensembl_acc_code = b.ensembl_acc_code
+                WHERE a.rs_id LIKE ?
+                ORDER BY a.rs_id
             """, (query,))
 
             form=None
@@ -121,12 +123,15 @@ def result():
                     #redirect to home page for user to try again
                     return redirect(url_for('home'))
 
+
                 cursor.execute("""
-                    SELECT rs_id, location, p_value, ensembl_acc_code FROM snp
-                    WHERE chromosome = ? and position >= ? and position <= ?
-                    ORDER BY position
-                """, (chromosome,start_position,end_position))
-                
+                        SELECT a.rs_id, a.location, a.p_value, b.symbol FROM snp a
+                        INNER JOIN gene b ON a.ensembl_acc_code = b.ensembl_acc_code
+                        WHERE a.chromosome = ? and a.position >= ? and a.position <= ?
+                        ORDER BY a.position
+                    """, (chromosome,start_position,end_position))
+
+
                 # Pass the region user searched for to the form
                 form=SummaryStatsForm()
                 form.chromosome_no.data=chromosome
@@ -144,16 +149,18 @@ def result():
         
         else:
             cursor.execute("""
-                SELECT rs_id, location, p_value, ensembl_acc_code FROM snp 
-                WHERE ensembl_acc_code LIKE ?
-                ORDER BY ensembl_acc_code
-            """, (query,))
+                SELECT a.rs_id, a.location, a.p_value, b.symbol FROM snp a
+                INNER JOIN gene b ON a.ensembl_acc_code = b.ensembl_acc_code
+                WHERE b.symbol LIKE ?
+                ORDER BY a.rs_id
+                """, (query,))
+            
 
             results = cursor.fetchall()
 
             cursor.execute("""
-                SELECT chromosome, start_position, end_position FROM gene 
-                WHERE ensembl_acc_code LIKE ?
+                SELECT chromosome, start_pos, end_pos FROM gene 
+                WHERE symbol LIKE ?
             """, (query,))
             
             gene_locations = cursor.fetchall()
@@ -188,7 +195,7 @@ def result():
     number_of_pages = (number_of_results//number_of_result_displayed) + 1
     results_displayed=[]
     if results:
-         results_displayed = results[((page-1)*number_of_result_displayed) : (page*number_of_result_displayed)]
+        results_displayed = results[((page-1)*number_of_result_displayed) : (page*number_of_result_displayed)]
 
     return render_template('search-result.html', 
                            results_displayed=results_displayed, 
@@ -208,7 +215,7 @@ def gene(gene_name):
     # get gene information from database
     conn=get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("""SELECT * FROM gene WHERE ensembl_acc_code = ?""",(gene_name,))
+    cursor.execute("""SELECT * FROM gene WHERE symbol = ?""",(gene_name,))
     gene_info = cursor.fetchone()
     conn.close()
 
