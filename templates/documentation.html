@@ -1,65 +1,92 @@
 {% extends "base.html" %}
 
-{% block title %} 
-About page
-{% endblock %}
+{% block title %} Documentation {% endblock %}
 
 {% block content %} 
-<head>
-    <meta charset="UTF-8">
-    <title>About | Gene Search Portal</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
-
-
-<body>
-
-    <header>
-        <h1>About the webapp</h1>
-        <p>lol i cant believe im doing this</p>
-    </header>
-
-    <div>
-        <h2> What is this project?</h2>
-        <p>
-            blah blah blah
-        </p>
-    </div>
-
-    <div>
-        <h2>Why did we build this?</h2>
-        <p>
-            blah blah blah
-        </p>
-    </div>
-
-    <div>
-        <h2>Meet the Team!!!</h2>
-        <p>
-            this is who we are
-        </p>
-    </div>
-
-    <section>
-        <h2>Technologies Used</h2>
+<div class="document-container">
+    <div class="document-sidebar">
+        <h2>Table of Contents</h2>
         <ul>
-            <li><strong>Python (Flask)</strong> - Frontend and backend framework</li>
-            <li><strong>SQLite & Pandas</strong> - Data storage and analysis</li>
-            <li><strong>HTML, CSS</strong> - User Interface</li>
+            <li><a onclick="showSection('content1')">1. Introduction</a></li>
+                <ul id ="sub-title-content1" class = "sub-title-content active">
+                    <li>1.1. Project rationalde and motivation</li>
+                    <li>1.2 Project objectives</li>
+                    <li>1.3 General application features</li>
+                    <li>1.4 Overview of technologies used</li>
+                </ul>
+            <li><a onclick="showSection('content2')">2.Web application features</a></li>
+                <ul id ="sub-title-content2" class = "sub-title-content">    
+                    <li>2.1 Feature 1</li>
+                    <li>2.2 Feature 2</li>
+                    <li>2.3 Feature 3</li>
+                </ul>
+            <li><a onclick="showSection('content3')">3. Database construction</a></li>
+                <ul id ="sub-title-content3" class = "sub-title-content">
+                    <li>3.1 Table 1</li>
+                    <li>3.2 Table 2</li>
+                    <li>3.3 Table 3</li>
+                </ul>
+            <li><a onclick="showSection('content4')">4. Population statistics</a></li>
+            <li><a onclick="showSection('content5')">5. Manual</a></li>
+            <li><a onclick="showSection('content6')">6. Contact</a></li>
         </ul>
-    </section>
+    </div>
+    <div class="document-content">
+        <div id="content1" class="document-section active">
+            <h2>Introduction</h2>
+            <p>Welcome to the documentation page. This guide will help you understand the features and usage of our project.</p>
+        </div>
+        <div id="content2" class="document-section">
+            <h2>Web application features</h2>
+            <p>Our web application provides the following features:</p>
+            <ul>
+                <li>Feature 1</li>
+                <li>Feature 2</li>
+                <li>Feature 3</li>
+            </ul>
+        </div>
+        <div id="content3" class="document-section">
+            <h2>Database construction</h2>
+            <p>The database is constructed using the following schema:</p>
+            <ul>
+                <li>Table 1</li>
+                <li>Table 2</li>
+                <li>Table 3</li>
+            </ul>
+        </div>
+        <div id="content4" class="document-section">
+            <h2>Population statistics</h2>
+            <p></p>
+            <ul>
+                <li>/</li>
+                <li>/</li>
+                <li>/</li>
+            </ul>
+        </div>
+        <div id="content5" class="document-section">
+            <h2>Manual</h2>
+            <p>The manual provides detailed instructions on how to use the application.</p>
+        </div>
+        <div id="content6" class="document-section">
+            <h2>Contact</h2>
+            <p>If you have any questions or feedback, please contact us at
+        </div>
+    </div>
+</div>
 
+<script>
+    function showSection(sectionId) {
+        // Hide all sections
+        document.querySelectorAll('.document-section').forEach(section => {
+            section.classList.remove('active');
+        });
+        document.querySelectorAll('.sub-title-content').forEach(section => {
+            section.classList.remove('active');
+        });
 
-    <section>
-        <h2>Where To Find Us</h2>
-        <p>GitHub: <a href="https://github.com/ven-hei/Focal-Fossa-T2D">Focal Fossa T2D</a></p>
-    </section>
-
-    <footer>
-        <p>&copy; Focal Fossa. All rights reserved.</p>
-    </footer>
-
-</body>
-</html>
-
-
+        // Show the selected section
+        document.getElementById(sectionId).classList.add('active');
+        document.getElementById('sub-title-' + sectionId).classList.add('active');
+    }
+</script>
 {% endblock %}

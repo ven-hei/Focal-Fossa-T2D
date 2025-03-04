@@ -3,12 +3,10 @@
 {% block title %}Summary Statistics{% endblock %}
 
 {% block content %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/summary_statistics.css') }}">
 
 <div class="summary-stats-alert">
     {% with messages = get_flashed_messages() %}
         {% if messages %}
-
             {% for message in messages %}
                 <div class="alert alert-warning" role="alert">
                     {{ message }}
@@ -19,7 +17,7 @@
 </div>
 
 <div class = "summary-statistics-form">
-    <div class="main-container d-flex flex-column align-items-center justify-content-center">
+    <div class="main-container d-flex flex-column align-items-center justify-content-center" style="margin-top: 0px;">
         <h1 class="text-center mb-4">Summary Statistics</h1>
         
         <div class="summary-statistics-form bg-light p-4 rounded shadow">
@@ -39,8 +37,11 @@
                         </div>
                     {% endfor %}
                     </div>
+                    <div class="invalid-feedback" id="population-error" style="display: none;">
+                        Please select at least one option.
+                    </div>
                 </fieldset>
-                <br>
+
                 <fieldset>
                     <p><b>{{ form.stats_parameter.label }}</b></p>
                     <div style="display: flex; flex-direction: row; column-gap: 50px">
@@ -56,12 +57,14 @@
                         </div>
                     {% endfor %}
                     </div>
+                    <div class="invalid-feedback" id="stats-error" style="display: none;">
+                        Please select at least one option.
+                    </div>
                 </fieldset>
-                <br>
-                <fieldset>
-                    {{form.calculate_option.label(style="display: none")}}
-                    {{form.calculate_option(style="display: none")}}
-                </fieldset>
+                <div style="display: none;">
+                    {{form.calculate_option.label}}
+                    {{form.calculate_option}}
+                </div>
                 <fieldset>
                     <div style="display: flex;flex-direction: row;column-gap: 50px; justify-content: space-between;">
                         <div>
@@ -77,24 +80,29 @@
                             {{ form.end_position (class="form-control form-control-lg") }}
                         </div>
                     </div>
+                </fieldset>
+                <fieldset>
                     <div>
                         {{ form.window_size.label(class="fs3 fw-bold") }}
                         {{ form.window_size(class="form-control form-control-lg",default=false) }}
                     </div>
-                    
                 </fieldset>
-                <br>
                 <div style="text-align: center;">
                     <button class="btn btn-primary" type="submit" >Analyse</button>
                 </div>
+                <dialog id = "processing">
+                    <p>Processing...</p>
+                    <p>It will take a while up to few minutes. Please to be patient</p>
+                    <div class="progress" role="progressbar" aria-label="Animated striped example" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 100%"></div>
+                    </div>
+                </dialog>
             </form>
         </div>
     </div>
 </div>
 
-
 <script>
-
     // define function for users choose 'all' option it will uncheck above option
     function toggleSelectAll(fieldName) {
         let checkboxes = document.querySelectorAll(`input[name="${fieldName}"]`);
@@ -114,6 +122,38 @@
             selectAll.checked = false;
         }
     }
+
+    // validate form before submitting at least one option in population and stats_parameter fields should be selected
+    const processingDialog = document.getElementById("processing");
+    document.querySelector('form').addEventListener('submit', function(event) {
+            let population_checkboxes = document.querySelectorAll('input[name^="population"]:checked');
+            let stats_checkboxes = document.querySelectorAll('input[name^="stats_parameter"]:checked');
+            if (population_checkboxes.length === 0) {
+                event.preventDefault();
+                document.getElementById('population-error').style.display = 'block';
+            } else {
+                document.getElementById('population-error').style.display = 'none';
+            }
+            if (stats_checkboxes.length === 0) {
+                event.preventDefault();
+                document.getElementById('stats-error').style.display = 'block';
+            } else {
+                document.getElementById('stats-error').style.display = 'none';
+            }
+
+            if (stats_checkboxes.length >0 && population_checkboxes.length >0){ 
+                processingDialog.showModal(); // Show processing popup
+                event.target.form.submit(); // Submit the form if valid
+            }
+    });
+
+    // Close processing dialog when go back this page
+    window.addEventListener("pageshow", function(event) {
+            if (event.persisted) {
+                processingDialog.close();
+            }
+        });
+    
 
 </script>
 {% endblock %}

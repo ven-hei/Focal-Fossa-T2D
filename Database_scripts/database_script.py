@@ -8,7 +8,9 @@ import json
 
 #print("start")
 # Connecting to sqlite
-conn = sqlite3.connect('Database/t2d_v3.db')
+app_path = os.path.dirname(os.path.abspath(__file__))
+database_path = os.path.join(app_path, '../Database/t2d_v3.db')
+conn = sqlite3.connect(database_path)
  
 # cursor object
 cursor = conn.cursor()

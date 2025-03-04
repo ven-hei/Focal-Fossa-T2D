@@ -51,6 +51,17 @@ def update_db():
         return render_template("home.html", message = "Error updating database", last_updated = last_update_db())
     return redirect(url_for("home"))
 
+# define population abbreviation
+conn = get_db_connection()
+cursor = conn.cursor()
+cursor.execute("SELECT DISTINCT abbreviation, population FROM populations")
+populations=cursor.fetchall()   
+conn.close()
+population_abbr = {pop[0]:pop[1] for pop in populations}
+
+# define population choices for summary statistics form
+populations_for_choices = [(pop[0], pop[1]) for pop in populations if pop[0]!="EUR"]
+populations_for_choices.append(("all","All"))
 
 # create a custom multi checkbox field
 class MultiCheckboxField(SelectMultipleField):
@@ -61,12 +72,8 @@ class MultiCheckboxField(SelectMultipleField):
 # create form class for summary statistics
 class SummaryStatsForm(FlaskForm):
     population = MultiCheckboxField('What population(s) do you want to analyze?',
-                                    choices=[('BEB','Bangladeshi'),
-                                              ('GIH','Gujarati'),
-                                              ('ITU','Indian'),
-                                              ('PJL','Punjabi'),
-                                              ('all','All')])
-    stats_parameter = MultiCheckboxField('Choose parameter(s) for further analysis:',
+                                    choices= populations_for_choices)
+    stats_parameter = MultiCheckboxField('Choose parameter(s) for summary statistics:',
                                           choices=[('fst','Fst'),
                                                    ('tajimas_d',"Tajima's D"),
                                                    ('all','All')],
@@ -77,14 +84,6 @@ class SummaryStatsForm(FlaskForm):
     chromosome_no = StringField('Chromosome:',validators=[DataRequired()])
     start_position = IntegerField('Start position:',validators=[DataRequired()])
     end_position = IntegerField('End position',validators=[DataRequired()])
-
-
-# define population abbreviation
-population_abbr = {'BEB':'Bangladeshi',
-                   'GIH':'Gujarati',
-                   'ITU':'Indian',
-                   'PJL':'Punjabi',
-                   'EUR': 'European'}
 
 
 # create new route for search results to show result on new page
@@ -105,7 +104,7 @@ def result():
             cursor.execute("""
                 SELECT a.rs_id, a.location, a.p_value, b.symbol FROM snp a
                 INNER JOIN gene b ON a.ensembl_acc_code = b.ensembl_acc_code
-                WHERE a.rs_id LIKE ?
+                WHERE a.rs_id = ?
                 ORDER BY a.rs_id
             """, (query,))
 
@@ -115,11 +114,13 @@ def result():
 
         elif search_option == "location_search":   
             try:
+                query=query.upper()
                 (chromosome,position)=query.split(':')
                 (start_position,end_position)=position.split('-')
                 if int(start_position)>int(end_position):
                     # add flash message later
-                    flash('You have entered invalid genomic coordinate. Please try again!')
+                    flash('You have entered invalid genomic coordinate. Please try again!\
+                          Right genomic coordinate format: chromosome:start_position-end_position')
                     #redirect to home page for user to try again
                     return redirect(url_for('home'))
 
@@ -143,7 +144,8 @@ def result():
 
             except:
                 # add flash message
-                flash('You have entered invalid genomic coordinate. Please try again!')
+                flash('You have entered invalid genomic coordinate. Please try again!\
+                      Right genomic coordinate format: chromosome:start_position-end_position')
                 #redirect to home page for user to try again
                 return redirect(url_for('home')) 
         
@@ -151,7 +153,7 @@ def result():
             cursor.execute("""
                 SELECT a.rs_id, a.location, a.p_value, b.symbol FROM snp a
                 INNER JOIN gene b ON a.ensembl_acc_code = b.ensembl_acc_code
-                WHERE b.symbol LIKE ?
+                WHERE b.symbol = ?
                 ORDER BY a.rs_id
                 """, (query,))
             
@@ -160,11 +162,12 @@ def result():
 
             cursor.execute("""
                 SELECT chromosome, start_pos, end_pos FROM gene 
-                WHERE symbol LIKE ?
+                WHERE symbol = ?
             """, (query,))
             
             gene_locations = cursor.fetchall()
 
+            #check these cases again   
             if len(gene_locations) == 1:
                 (chromosome,start_position,end_position) = gene_locations[0]
 
@@ -260,6 +263,7 @@ def calculate_tajimas_d (vcf_data,population,start,stop, window_size):
         f'tajimas_d_{population}':D
         })
     
+    # set index for dataframe for concatenation tajima's D data from different populations
     df = df.set_index(['chromosome','start_position','end_position'])
 
     return df
@@ -269,7 +273,7 @@ def calculate_tajimas_d (vcf_data,population,start,stop, window_size):
 def plot_tajimas_d(data_tajima,population):
     plt.figure(figsize=(12, 6))
     # sns.lineplot(x=(data_tajima['start_position']+data_tajima['end_position']-1)//2, y=data_tajima[f'tajimas_d_{pop}'])
-    x=data_tajima.index
+    x=data_tajima.index # mid position of each window will be used as index later
     y=data_tajima[f'tajimas_d_{population}']
 
     # Plot vertical blue lines for each base pair value
@@ -310,6 +314,7 @@ def calculate_fst(vcf_data1,vcf_data2,pop1,pop2,start,stop,window_size):
         f'fst_{pop1}_{pop2}':fst
         })
     
+    # set index for dataframe for concatenation Fst data from different populations
     df = df.set_index(['chromosome','start_position','end_position'])
 
     return df
@@ -318,7 +323,7 @@ def calculate_fst(vcf_data1,vcf_data2,pop1,pop2,start,stop,window_size):
 # define function to plot Fst
 def plot_fst(data_fst,pop1,pop2):
     plt.figure(figsize=(12, 6))
-    x=data_fst.index
+    x=data_fst.index # mid position of each window will be used as index later
     y=data_fst[f'fst_{pop1}_{pop2}']
     plt.scatter(x,y, color='blue', s=10, alpha=0.6)
     plt.axhline(y=y.mean(), color='red', linestyle='--',label="Mean")
@@ -345,7 +350,7 @@ def summary_stats_result():
     start_position = request.args.get('start_position',type=int)
     end_position = request.args.get('end_position',type=int)
     window_size = request.args.get('window_size',10000,type=int)
-    chromosome_no = request.args.get('chromosome_no')
+    chromosome_no = request.args.get('chromosome_no').upper()
     
     # In case user want to calculate summary statistics by their parameters, read data from vcf files 
     # by required population and save as a dictionary for better performance (to avoid reading vcf files 
@@ -437,9 +442,9 @@ def summary_stats_result():
             # read data from database
             conn = sqlite3.connect(database_path)
             column_list = [f'tajimas_d_{pop}' for pop in population_for_stats]
-            data_tajima=pd.read_sql_query(f"SELECT chromosome, start_position, end_position, {', '.join(column_list)} FROM stats_by_position_interval\
-            WHERE chromosome = {chromosome_no} and start_position >= {start_position-10000} and end_position <= {end_position+10000}\
-            ORDER BY start_position",conn)
+            data_tajima=pd.read_sql_query(f"""SELECT chromosome, start_position, end_position, {', '.join(column_list)} FROM stats_by_position_interval
+            WHERE chromosome = "{chromosome_no}" and start_position >= {start_position-10000} and end_position <= {end_position+10000}
+            ORDER BY start_position""",conn,dtype={x:float for x in column_list})
             conn.close()
 
             if data_tajima.empty:
@@ -450,9 +455,9 @@ def summary_stats_result():
             # read data from database
             conn = sqlite3.connect(database_path)
             column_list=[f'fst_{pop}_EUR' for pop in population_for_stats]
-            data_fst=pd.read_sql_query(f"SELECT chromosome, start_position, end_position, {', '.join(column_list)} FROM stats_by_position_interval\
-            WHERE chromosome = {chromosome_no} and start_position >= {start_position-10000} and end_position <= {end_position+10000}\
-            ORDER BY start_position",conn)
+            data_fst=pd.read_sql_query(f"""SELECT chromosome, start_position, end_position, {', '.join(column_list)} FROM stats_by_position_interval
+            WHERE chromosome = "{chromosome_no}" and start_position >= {start_position-10000} and end_position <= {end_position+10000}
+            ORDER BY start_position""",conn,dtype={x:float for x in column_list})
             conn.close()
             
 
@@ -504,13 +509,13 @@ def summary_stats_result():
                 
                 df_tajimas_d_by_population = calculate_tajimas_d(vcf_data, pop, start_position, end_position, window_size)
                 data_tajima = pd.concat([data_tajima,df_tajimas_d_by_population],axis=1)
-                data_tajima.fillna(0,inplace=True)
+                # data_tajima.fillna(0,inplace=True)
             
             if 'fst' in stats_metric:
                 pop2='EUR'
                 df_fst_by_population = calculate_fst(vcf_data,vcf_data_EUR,pop,pop2,start_position,end_position,window_size)
                 data_fst = pd.concat([data_fst,df_fst_by_population],axis=1)
-                data_fst.fillna(0,inplace=True)
+                # data_fst.fillna(0,inplace=True)
 
         data_tajima.reset_index(inplace=True)    
         data_fst.reset_index(inplace=True)

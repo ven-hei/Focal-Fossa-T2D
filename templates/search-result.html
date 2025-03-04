@@ -4,256 +4,257 @@
 
 {% block content %} 
     <div class="result-page">
+        {%if search_option != 'SNP_search' %}  
         <div class="stats-container">
-            {%if search_option != 'SNP_search' %}   
-                <div class="accordion" id="accordionExample">
-                    <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                        <b>Summary statistics</b>
-                        </button>
-                    </h2>
-                    <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
-                        <div class="accordion-body">
-                            <form action="/summary-stats-result" method="get">
-                                <fieldset>
-                                    <p><i>{{ form.population.label }}</i></p>
-                                    {% for subfield in form.population %}
-                                        <div>
-                                            <input type="checkbox" name="{{ subfield.name }}" value="{{ subfield.data }}" id="{{ subfield.id }}" 
-                                            {% if subfield.data == 'all' %} 
-                                                onclick="toggleSelectAll('population')" 
-                                            {% else %} 
-                                                onclick="uncheckSelectAll('population')" 
-                                            {% endif %} >
-                                        <label for="{{ subfield.id }}">{{ subfield.label.text }}</label>
-                                        </div>
-                                    {% endfor %}
-                                </fieldset>
-                                <br>
-                                <fieldset>
-                                    <p><i>{{ form.stats_parameter.label }}</i></p>
-                                    <div style="display: flex; flex-direction: row; justify-content: space-between;">
-                                        {% for subfield in form.stats_parameter %}
-                                        <div>
-                                            <input type="checkbox" name="{{ subfield.name }}" value="{{ subfield.data }}" id="{{ subfield.id }}" 
-                                            {% if subfield.data == 'all' %} 
-                                                onclick="toggleSelectAll('stats_parameter')" 
-                                            {% else %} 
-                                                onclick="uncheckSelectAll('stats_parameter')" 
-                                            {% endif %} >
-                                        <label for="{{ subfield.id }}">{{ subfield.label.text }}</label>
-                                        </div>
-                                    {% endfor %}
+            <div class="accordion" id="accordionExample">
+                <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                    <b>Summary statistics</b>
+                    </button>
+                </h2>
+                <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <form action="/summary-stats-result" method="get">
+                            <fieldset>
+                                <p><i>{{ form.population.label }}</i></p>
+                                {% for subfield in form.population %}
+                                    <div>
+                                        <input type="checkbox" name="{{ subfield.name }}" value="{{ subfield.data }}" id="{{ subfield.id }}" 
+                                        {% if subfield.data == 'all' %} 
+                                            onclick="toggleSelectAll('population')" 
+                                        {% else %} 
+                                            onclick="uncheckSelectAll('population')" 
+                                        {% endif %} >
+                                    <label for="{{ subfield.id }}">{{ subfield.label.text }}</label>
                                     </div>
-                                </fieldset>
-                                <br>
-                                <fieldset> 
-                                    <b><u><i>NOTE:</i></u> We will use precalculated data for analysis</b>
-                                    <div style="display: flex; column-gap: 5px;">
-                                        <div>{{ form.calculate_option(id="calculate_option") }}</div>
-                                        <div>{{ form.calculate_option.label(for="calculate_option") }}</div>
-                                    </div>
-                                    {% if form.calculate_option.data == True %} 
-                                        <div id="user_input" style="display: block;">
-                                            <div>
-                                                {{ form.chromosome_no.label(class="fs3 fw-bold") }}
-                                                {{ form.chromosome_no(class="form-control form-control-lg") }}
-                                            </div>
-                                            <div style="display: flex;flex-direction: row; justify-content: space-between;">
-                                                <div>
-                                                    {{ form.start_position.label(class="fs3 fw-bold") }}
-                                                    {{ form.start_position (class="form-control form-control-lg") }}
-                                                </div>
-                                                <div>
-                                                    {{ form.end_position.label(class="fs3 fw-bold") }}
-                                                    {{ form.end_position (class="form-control form-control-lg") }}
-                                                </div>
-                                            </div>
-                                            <div>
-                                                {{ form.window_size.label(class="fs3 fw-bold") }}
-                                                {{ form.window_size(class="form-control form-control-lg") }}
-                                            </div>
-                                        </div>
-                                    {% else %}
-                                        <div id="user_input" style="display: none;">
-                                            <div>
-                                                {{ form.chromosome_no.label(class="fs3 fw-bold") }}
-                                                {{ form.chromosome_no(class="form-control form-control-lg") }}
-                                            </div>
-                                            <div style="display: flex;flex-direction: row; justify-content: space-between;">
-                                                <div>
-                                                    {{ form.start_position.label(class="fs3 fw-bold") }}
-                                                    {{ form.start_position (class="form-control form-control-lg") }}
-                                                </div>
-                                                <div>
-                                                    {{ form.end_position.label(class="fs3 fw-bold") }}
-                                                    {{ form.end_position (class="form-control form-control-lg") }}
-                                                </div>
-                                            </div>
-                                            <div>
-                                                {{ form.window_size.label(class="fs3 fw-bold") }}
-                                                {{ form.window_size(class="form-control form-control-lg") }}
-                                            </div>
-                                        </div>
-                                    {% endif %}
-                                </fieldset>
-                                <div style="display: flex;justify-content: center;margin-top: 20px;">
-                                    <button class="btn btn-primary" style="text-align: center;" id="analyse" type="submit" >Analyse</button>
+                                {% endfor %}
+                                <div class="invalid-feedback" id="population-error" style="display: none;">
+                                    Please select at least one option.
                                 </div>
-                                
-                                <dialog id = "processing">
-                                    <p>Processing...</p>
-                                    <p>It will take a while up to few minutes. Please to be patient</p>
-                                    <div class="progress" role="progressbar" aria-label="Animated striped example" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
-                                        <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 100%"></div>
+                            </fieldset>
+                            <br>
+                            <fieldset>
+                                <p><i>{{ form.stats_parameter.label }}</i></p>
+                                <div style="display: flex; flex-direction: row; justify-content: space-between;">
+                                    {% for subfield in form.stats_parameter %}
+                                    <div>
+                                        <input type="checkbox" name="{{ subfield.name }}" value="{{ subfield.data }}" id="{{ subfield.id }}" 
+                                        {% if subfield.data == 'all' %} 
+                                            onclick="toggleSelectAll('stats_parameter')" 
+                                        {% else %} 
+                                            onclick="uncheckSelectAll('stats_parameter')" 
+                                        {% endif %} >
+                                    <label for="{{ subfield.id }}">{{ subfield.label.text }}</label>
                                     </div>
-                                </dialog>
-                            </form>
-                        </div>
-                    </div>
+                                {% endfor %}
+                                </div>
+                                <div class="invalid-feedback" id="stats-error" style="display: none;">
+                                    Please select at least one option.
+                                </div>
+                            </fieldset>
+                            <br>
+                            <fieldset> 
+                                <b><u><i>NOTE:</i></u> We will use precalculated data for summary statistics (default window size is <span style="color:red">10kb</span>)</b>
+                                <div style="display: flex; column-gap: 5px;">
+                                    <div>{{ form.calculate_option(id="calculate_option") }}</div>
+                                    <div>{{ form.calculate_option.label(for="calculate_option") }}</div>
+                                </div>
+                                {% if form.calculate_option.data == True %} 
+                                    <div id="user_input" style="display: block;">
+                                        <div>
+                                            {{ form.chromosome_no.label(class="fs3 fw-bold") }}
+                                            {{ form.chromosome_no(class="form-control form-control-lg") }}
+                                        </div>
+                                        <div style="display: flex;flex-direction: row; justify-content: space-between;">
+                                            <div>
+                                                {{ form.start_position.label(class="fs3 fw-bold") }}
+                                                {{ form.start_position (class="form-control form-control-lg") }}
+                                            </div>
+                                            <div>
+                                                {{ form.end_position.label(class="fs3 fw-bold") }}
+                                                {{ form.end_position (class="form-control form-control-lg") }}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            {{ form.window_size.label(class="fs3 fw-bold") }}
+                                            {{ form.window_size(class="form-control form-control-lg") }}
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div id="user_input" style="display: none;">
+                                        <div>
+                                            {{ form.chromosome_no.label(class="fs3 fw-bold") }}
+                                            {{ form.chromosome_no(class="form-control form-control-lg") }}
+                                        </div>
+                                        <div style="display: flex;flex-direction: row; justify-content: space-between;">
+                                            <div>
+                                                {{ form.start_position.label(class="fs3 fw-bold") }}
+                                                {{ form.start_position (class="form-control form-control-lg") }}
+                                            </div>
+                                            <div>
+                                                {{ form.end_position.label(class="fs3 fw-bold") }}
+                                                {{ form.end_position (class="form-control form-control-lg") }}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            {{ form.window_size.label(class="fs3 fw-bold") }}
+                                            {{ form.window_size(class="form-control form-control-lg") }}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </fieldset>
+                            <div style="display: flex;justify-content: center;margin-top: 20px;">
+                                <button class="btn btn-primary" style="text-align: center;" id="analyse" type="submit" >Analyse</button>
+                            </div>
+                            
+                            <dialog id = "processing">
+                                <p>Processing...</p>
+                                <p>It will take a while up to few minutes. Please to be patient</p>
+                                <div class="progress" role="progressbar" aria-label="Animated striped example" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 100%"></div>
+                                </div>
+                            </dialog>
+                        </form>
                     </div>
                 </div>
-            {% endif %}
-        </div>
-        <div class="result-container">
-            <div>
-                <div style="text-align: center;"><h2>Search result</h2></div>
-                <div>
-                    <div><p>Result for: <i>
-                        {% if search_option == 'SNP_search' %}
-                            SNP
-                        {% elif search_option == 'location_search' %}
-                            genomic corrdinate
-                        {% elif search_option == 'mapped_gene_search' %} 
-                            gene
-                        {% else %}
-                            all
-                        {% endif %}
-                        "{{ query }}"
-                    </i></p></div>
-
                 </div>
             </div>
-    
-            <!-- show table of results  -->
+        </div>
+        {% endif %}
+        <div class="result-container">
+            {% if search_option == 'SNP_search' %}
+            <div style="margin: 0 300px;">
+            {% else %}
             <div>
-                {% if results_displayed %}
+            {% endif %}
+                <div>
+                    <div style="text-align: center;"><h2>Search result</h2></div>
                     <div>
-                        <form action="" method="get">
-                            Display
-                            <input type="hidden" name="query" value="{{ query }}">
-                            <input type="hidden" name="search_option" value="{{ search_option }}">
-                            <select name="number_of_result_displayed" onchange="this.form.submit()">
-                                <option value="10" {% if number_of_result_displayed == 10 %} selected {% endif %}>10</option>
-                                <option value="20" {% if number_of_result_displayed == 20 %} selected {% endif %}>20</option>
-                                <option value="50" {% if number_of_result_displayed == 50 %} selected {% endif %}>50</option>
-                                <option value="100" {% if number_of_result_displayed == 100 %} selected {% endif %}>100</option>
-                            </select>
-                            results per page
-                        </form>   
-                    </div>
-                    <div>
-                        <table class="table table-striped">
-                            <tr>
-                                <th>No</th>
-                                <th>SNP</th>
-                                <th>p-value</th>
-                                <th>Chromosome position</th>
-                                <th>Mapped gene</th>
-                            </tr>
-                            {% for snp in results_displayed %}
-                            <tr>
-                                <td>{{ loop.index + (page-1) * number_of_result_displayed }}</td>
-                                <td>{{ snp.rs_id }}</td>
-                                <td>{{ snp.p_value }}</td>
-                                <td>{{ snp.location }}</td>
-                                <td>
-                                    <a href="/gene/{{ snp.symbol}}" target="_self">
-                                        {{ snp.symbol}}
-                                    </a>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </table>
-                    </div>
-                    <div style="width: 100%; display: flex; justify-content: space-between;padding-right: 50px;">
-                        <div>
-                            <i>Showing 
-    
-                            {% if page * number_of_result_displayed <= number_of_results %}
-                                {{ (page-1)*number_of_result_displayed+1 }} - {{ page * number_of_result_displayed }} of {{ number_of_results }}
+                        <div><p>Result for: <i>
+                            {% if search_option == 'SNP_search' %}
+                                SNP
+                            {% elif search_option == 'location_search' %}
+                                genomic corrdinate
+                            {% elif search_option == 'mapped_gene_search' %} 
+                                gene
                             {% else %}
-                                {{ (page-1)*number_of_result_displayed+1 }} - {{ number_of_results }} of {{ number_of_results }}
+                                all
                             {% endif %}
-    
-                            results</i>
+                            "{{ query }}"
+                        </i></p></div>
+
+                    </div>
+                </div>
+        
+                <!-- show table of results  -->
+                <div>
+                    {% if results_displayed %}
+                        <div>
+                            <form action="" method="get">
+                                Display
+                                <input type="hidden" name="query" value="{{ query }}">
+                                <input type="hidden" name="search_option" value="{{ search_option }}">
+                                <select name="number_of_result_displayed" onchange="this.form.submit()">
+                                    <option value="10" {% if number_of_result_displayed == 10 %} selected {% endif %}>10</option>
+                                    <option value="20" {% if number_of_result_displayed == 20 %} selected {% endif %}>20</option>
+                                    <option value="50" {% if number_of_result_displayed == 50 %} selected {% endif %}>50</option>
+                                    <option value="100" {% if number_of_result_displayed == 100 %} selected {% endif %}>100</option>
+                                </select>
+                                results per page
+                            </form>   
                         </div>
-                        <div> <!-- select page to display -->
-                            {% if number_of_pages >1 %}
-                                {% if page != 1 %}
-                                    <a href="/search-result?query={{ query }}&search_option={{ search_option }}&page=1&number_of_result_displayed={{ number_of_result_displayed }}">« First</a>
-                                {% endif %}
-    
-                                {% if page > 1 %}
-                                    <a href="/search-result?query={{ query }}&search_option={{ search_option }}&page={{ page - 1 }}&number_of_result_displayed={{ number_of_result_displayed }}">	&#60; Previous</a>
-                                {% endif %}
-                                
-    
-                                {% if number_of_pages <=5 %}
-                                    {% for p in range(1, number_of_pages + 1) %}
-                                        {% if p == page %}
-                                            <strong>{{ p }}</strong>
-                                        {% else %}
-                                            <a href="/search-result?query={{ query }}&search_option={{ search_option }}&page={{ p }}&number_of_result_displayed={{ number_of_result_displayed }}">{{ p }}</a>
-                                        {% endif %}
-                                    {% endfor %}
+                        <div>
+                            <table class="table table-striped">
+                                <tr>
+                                    <th>No</th>
+                                    <th>SNP</th>
+                                    <th>p-value</th>
+                                    <th>Chromosome position</th>
+                                    <th>Mapped gene</th>
+                                </tr>
+                                {% for snp in results_displayed %}
+                                <tr>
+                                    <td>{{ loop.index + (page-1) * number_of_result_displayed }}</td>
+                                    <td>{{ snp.rs_id }}</td>
+                                    <td>{{ snp.p_value }}</td>
+                                    <td>{{ snp.location }}</td>
+                                    <td>
+                                        <a href="/gene/{{ snp.symbol}}" target="_self">
+                                            {{ snp.symbol}}
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                        <div style="width: 100%; display: flex; justify-content: space-between;padding-right: 50px;">
+                            <div>
+                                <i>Showing 
+        
+                                {% if page * number_of_result_displayed <= number_of_results %}
+                                    {{ (page-1)*number_of_result_displayed+1 }} - {{ page * number_of_result_displayed }} of {{ number_of_results }}
                                 {% else %}
-                                    <!-- {% if page != 1 %}
-                                        <a href="/search-result?query={{ query }}&search_option={{ search_option }}&page=1&number_of_result_displayed={{ number_of_result_displayed }}">1 .....</a>
-                                    {% endif %} -->
-                                    {% for p in range(page-2,page+3) %}
-                                        {% if p >= 1 and p <= number_of_pages %}
+                                    {{ (page-1)*number_of_result_displayed+1 }} - {{ number_of_results }} of {{ number_of_results }}
+                                {% endif %}
+        
+                                results</i>
+                            </div>
+                            <div> <!-- select page to display -->
+                                {% if number_of_pages >1 %}
+                                    {% if page != 1 %}
+                                        <a href="/search-result?query={{ query }}&search_option={{ search_option }}&page=1&number_of_result_displayed={{ number_of_result_displayed }}">« First</a>
+                                    {% endif %}
+        
+                                    {% if page > 1 %}
+                                        <a href="/search-result?query={{ query }}&search_option={{ search_option }}&page={{ page - 1 }}&number_of_result_displayed={{ number_of_result_displayed }}">	&#60; Previous</a>
+                                    {% endif %}
+                                    
+        
+                                    {% if number_of_pages <=5 %}
+                                        {% for p in range(1, number_of_pages + 1) %}
                                             {% if p == page %}
                                                 <strong>{{ p }}</strong>
                                             {% else %}
                                                 <a href="/search-result?query={{ query }}&search_option={{ search_option }}&page={{ p }}&number_of_result_displayed={{ number_of_result_displayed }}">{{ p }}</a>
                                             {% endif %}
-                                        {% endif %}
-                                    {% endfor %}    
-                                    <!-- {% if page != number_of_pages %}
-                                        <a href="/search-result?query={{ query }}&search_option={{ search_option }}&page={{ number_of_pages }}&number_of_result_displayed={{ number_of_result_displayed }}">.....{{ number_of_pages }}</a>
-                                    {% endif %} -->
+                                        {% endfor %}
+                                    {% else %}
+                                        <!-- {% if page != 1 %}
+                                            <a href="/search-result?query={{ query }}&search_option={{ search_option }}&page=1&number_of_result_displayed={{ number_of_result_displayed }}">1 .....</a>
+                                        {% endif %} -->
+                                        {% for p in range(page-2,page+3) %}
+                                            {% if p >= 1 and p <= number_of_pages %}
+                                                {% if p == page %}
+                                                    <strong>{{ p }}</strong>
+                                                {% else %}
+                                                    <a href="/search-result?query={{ query }}&search_option={{ search_option }}&page={{ p }}&number_of_result_displayed={{ number_of_result_displayed }}">{{ p }}</a>
+                                                {% endif %}
+                                            {% endif %}
+                                        {% endfor %}    
+                                        <!-- {% if page != number_of_pages %}
+                                            <a href="/search-result?query={{ query }}&search_option={{ search_option }}&page={{ number_of_pages }}&number_of_result_displayed={{ number_of_result_displayed }}">.....{{ number_of_pages }}</a>
+                                        {% endif %} -->
+                                    {% endif %}
+                                    
+                                    {% if page < number_of_pages %}
+                                        <a href="/search-result?query={{ query }}&search_option={{ search_option }}&page={{ page + 1 }}&number_of_result_displayed={{ number_of_result_displayed }}">Next &#62;</a>
+                                    {% endif %}
+        
+                                    {% if page != number_of_pages %}
+                                        <a href="/search-result?query={{ query }}&search_option={{ search_option }}&page={{ number_of_pages }}&number_of_result_displayed={{ number_of_result_displayed }}">Last »</a>
+                                    {% endif %}
                                 {% endif %}
-                                
-                                {% if page < number_of_pages %}
-                                    <a href="/search-result?query={{ query }}&search_option={{ search_option }}&page={{ page + 1 }}&number_of_result_displayed={{ number_of_result_displayed }}">Next &#62;</a>
-                                {% endif %}
-    
-                                {% if page != number_of_pages %}
-                                    <a href="/search-result?query={{ query }}&search_option={{ search_option }}&page={{ number_of_pages }}&number_of_result_displayed={{ number_of_result_displayed }}">Last »</a>
-                                {% endif %}
-                            {% endif %}
+                            </div>
                         </div>
-                    </div>
-                {% else %}
-                    <p>No matching results.</p>
-                {% endif %}
+                    {% else %}
+                        <p>No matching results.</p>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div> 
     <script>
-        const showProcessing = document.getElementById("analyse");
-        const processingDialog = document.getElementById("processing");
-
-        // show processing dialog after clicking Analyse button and all validation passed
-        showProcessing.addEventListener("click", (event) => {
-            event.preventDefault(); // Prevent the default form submission
-            if (event.target.form.reportValidity()) { // Check form validity
-                processingDialog.showModal();
-                event.target.form.submit(); // Submit the form if valid
-            }
-        });
 
         // define function for users choose 'calculate' option it will show input fields
         document.getElementById("calculate_option").addEventListener("change", function() {
@@ -284,5 +285,38 @@
                 selectAll.checked = false;
             }
         }
+
+        
+        // validate form before submitting at least one option in population and stats_parameter fields should be selected
+        const processingDialog = document.getElementById("processing");
+        document.querySelector('form').addEventListener('submit', function(event) {
+            let population_checkboxes = document.querySelectorAll('input[name^="population"]:checked');
+            let stats_checkboxes = document.querySelectorAll('input[name^="stats_parameter"]:checked');
+            if (population_checkboxes.length === 0) {
+            event.preventDefault();
+            document.getElementById('population-error').style.display = 'block';
+            } else {
+            document.getElementById('population-error').style.display = 'none';
+            }
+            if (stats_checkboxes.length === 0) {
+            event.preventDefault();
+            document.getElementById('stats-error').style.display = 'block';
+            } else {
+            document.getElementById('stats-error').style.display = 'none';
+            }
+
+            if (stats_checkboxes.length > 0 && population_checkboxes.length > 0) { 
+                processingDialog.showModal(); // Show processing popup
+                event.target.form.submit(); // Submit the form if valid
+            }
+        });
+
+        // Close processing dialog when go back this page
+        window.addEventListener("pageshow", function(event) {
+            if (event.persisted) {
+                processingDialog.close();
+            }
+        });
+
     </script>   
 {% endblock %}

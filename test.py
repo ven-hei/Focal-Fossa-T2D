@@ -1,8 +1,16 @@
-# import allel
-# import numpy as np
-# import matplotlib.pyplot as plt
-# import os
-
+from flask import Flask, flash, render_template, url_for, redirect, request
+from flask_wtf import FlaskForm
+from wtforms import SearchField, StringField, SubmitField,SelectField,SelectMultipleField,IntegerField,RadioField,widgets,BooleanField
+from wtforms.validators import DataRequired
+import sqlite3
+import pandas as pd
+import os
+import allel
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import datetime
+import subprocess
 # vcf_dir = "/Users/zhou/Download/ITU_population"
 # population = "ITU"
 
@@ -73,13 +81,26 @@
 
 # print(gene_info[2])
 
-A = ['a', 'b', 'c','d']
-B = A[::]
+# A = ['a', 'b', 'c','d']
+# B = A[::]
 
-# for i in A:
-#     B.remove(i)
-#     for j in B:
-#         print(i, j)
-for i in range(len(A)):
-    for j in range(i+1, len(A)):
-        print(A[i], A[j])
+# # for i in A:
+# #     B.remove(i)
+# #     for j in B:
+# #         print(i, j)
+# for i in range(len(A)):
+#     for j in range(i+1, len(A)):
+#         print(A[i], A[j])
+
+conn=sqlite3.connect("Database/t2d_v3.db")
+cursor=conn.cursor()
+cursor.execute("SELECT distinct abbreviation, population FROM populations")
+populations=cursor.fetchall()   
+conn.close()
+print(populations)
+populations_for_choices = [(pop[0], pop[1]) for pop in populations if pop[0]!="EUR"]
+populations_for_choices.append(("all","All"))
+print(populations_for_choices)
+
+populations_abbreviation = {pop[0]:pop[1] for pop in populations}
+print(populations_abbreviation)

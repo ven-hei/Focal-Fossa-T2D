@@ -1,10 +1,17 @@
-.summary-statistics-form {
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.summary-stats-alert{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
 }
 
+.summary-statistics-form {
+    padding: 20px;
+}
+
+.summary-statistics-form fieldset {
+    margin-bottom: 20px;
+}
 /* Style the form headings */
 .summary-statistics-form h3 {
     margin-top: 20px;
@@ -37,9 +44,4 @@
 
 .summary-statistics-form button[type="submit"]:hover {
     background-color: #0056b3;
-}
-
-/* Add some spacing between form elements */
-.summary-statistics-form div {
-    margin-bottom: 20px;
 }
