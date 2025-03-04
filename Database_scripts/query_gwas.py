@@ -34,9 +34,10 @@ else:
 # open the json file
 json_data = open("data.json") # change to data when using the actual data
 
+# loading the data from the json file to the variable for parsing
 data = json.load(json_data)
 
-conn = sqlite3.connect('Database/t2d.db')
+conn = sqlite3.connect('../Database/t2d.db')
  
 # cursor object
 cursor = conn.cursor()
@@ -103,10 +104,7 @@ for association in associations:
                     VALUES (?, ?, ?, ?, ?, ?)""", 
                     (rs_id, chro, pos, loc, p_value, ensembl_id))
         conn.commit()
-        # cursor.execute("""
-        #             INSERT INTO gene (symbol, ensembl_acc_code, NCBI_gene_ID) 
-        #             VALUES (?, ?, ?)""", 
-        #             (mapped_gene, ensembl_id, ncbi_id))
+        
         json_loci_data.close()
         os.remove(file_loci)
 

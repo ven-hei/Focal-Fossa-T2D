@@ -7,12 +7,14 @@ import os
 import sqlite3
 
 # Connecting to sqlite
-conn = sqlite3.connect('Database/t2d.db')
+conn = sqlite3.connect('../Database/t2d.db')
  
 # cursor object
 cursor = conn.cursor()
 
+# drop the old table if exists
 cursor.execute("DROP TABLE gene")
+# create a new gene table with the requred column names
 cursor.execute(""" CREATE TABLE gene (
             symbol VARCHAR(100) NOT NULL,
             full_name VARCHAR(255),

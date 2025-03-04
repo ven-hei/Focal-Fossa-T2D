@@ -27,6 +27,7 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
+# Retrieving last updated date from the database, accessed table, for the home page
 def last_update_db():
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -46,6 +47,7 @@ def home():
 @app.route("/update_db", methods = ["POST"])
 def update_db():
     try:
+        # running the database script to update the database
         subprocess.run(["python", "Database_scripts/database_script.py"], check = True)
     except Exception as e: # if update is unsuccessful error will be returned to the user
         return render_template("home.html", message = "Error updating database", last_updated = last_update_db())
@@ -100,7 +102,9 @@ def result():
         conn = get_db_connection()
         cursor = conn.cursor()
 
+        # If user selects SNP_search and inputs rs ID for search
         if search_option == 'SNP_search':
+            # Joining the snp and gene tables together in order to retrieve all needed information for the search result page
             cursor.execute("""
                 SELECT a.rs_id, a.location, a.p_value, b.symbol FROM snp a
                 INNER JOIN gene b ON a.ensembl_acc_code = b.ensembl_acc_code
@@ -112,6 +116,7 @@ def result():
 
             results = cursor.fetchall()
 
+        # If user selects location_search and inputs genomic region
         elif search_option == "location_search":   
             try:
                 query=query.upper()
@@ -124,7 +129,7 @@ def result():
                     #redirect to home page for user to try again
                     return redirect(url_for('home'))
 
-
+                # Joining the snp and gene tables together in order to retrieve all needed information for the search result page
                 cursor.execute("""
                         SELECT a.rs_id, a.location, a.p_value, b.symbol FROM snp a
                         INNER JOIN gene b ON a.ensembl_acc_code = b.ensembl_acc_code
@@ -149,7 +154,9 @@ def result():
                 #redirect to home page for user to try again
                 return redirect(url_for('home')) 
         
+        # If user selects gene search and inputs the short gene name
         else:
+            # Joining the snp and gene tables together in order to retrieve all needed information for the search result page
             cursor.execute("""
                 SELECT a.rs_id, a.location, a.p_value, b.symbol FROM snp a
                 INNER JOIN gene b ON a.ensembl_acc_code = b.ensembl_acc_code

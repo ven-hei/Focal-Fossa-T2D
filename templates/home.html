@@ -55,6 +55,7 @@
                 </form> 
         </div> 
     </div>
+    <!-- creating a button to update the database-->
     <div>
         <link rel="stylesheet" href="/static/update.css">
         <body>
@@ -63,6 +64,7 @@
                     <button class="update_button" id="button--loading" type="submit">
                         <span class="button__text">Update database</span>
                     </button>
+                    <!-- showing a message box with an animation while running the database script -->
                     <dialog id="updating">
                         <p>Updating...</p>
                         <p>It will take up to an hour. Please be patient</p>
@@ -71,10 +73,14 @@
                         </div>
                     </dialog>
                 </form>
+                <!-- indicate when was the last time the database was updated-->
                 <p>Database last updated: {{ last_updated }}</p>
             </div>
     
             <script>
+                // startLoading function will be initiated when the user clicks the button
+                // first it will show a pop up window checking that the user wants to update the database since it can take up to an hour 
+                // and then show the message box with the animation
                 function startLoading() {
                     const confirmUpdate = confirm("This process can take up to an hour. Do you want to proceed?");
                     if (!confirmUpdate){
@@ -82,7 +88,7 @@
                     }
                     const button = document.getElementById("button--loading");
                     button.classList.add("update_button--loading"); // Apply loader animation
-                    button.disabled = true; // Disable button
+                    button.disabled = true; // Disable button while running the script
                     document.getElementById("updating").showModal(); // Show dialog box
                 }
             </script>

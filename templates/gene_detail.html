@@ -16,10 +16,12 @@
             {% endwith %}
         </div>
     </div>
+    <!-- going through the gene info from the database -->
     {% if gene_info is not none %}
       <div class="content">
         <h1 style="text-align: center; padding-bottom: 20px">Gene Information</h1>
-      <table class="table table-striped gene-table">
+      <!-- creating the table including the needed info in table format -->
+        <table class="table table-striped gene-table">
         <tr>
             <th>Symbol</th>
             <td>{{ gene_info.symbol }}</td>
@@ -30,12 +32,14 @@
         </tr>
         <tr>
           <th>Associated functional or ontology term</th>
+          <!-- writing the description in bullet point format -->
           <td>
             {% for term in gene_info.description %}
               <p> - {{ term }}</p>
             {% endfor %}
           </td>
         </tr>
+        <!-- creating a link to NCBI on the gene ID -->
         <tr>
           <th>NCBI gene ID</th>
           <td><a href={{ gene_info.ncbi_link }} target="_blank">{{ gene_info.NCBI_gene_ID}}</a></td>

@@ -6,10 +6,9 @@ import os
 import requests
 import json
 
-#print("start")
 # Connecting to sqlite
 app_path = os.path.dirname(os.path.abspath(__file__))
-database_path = os.path.join(app_path, '../Database/t2d_v3.db')
+database_path = os.path.join(app_path, '../Database/t2d.db')
 conn = sqlite3.connect(database_path)
  
 # cursor object
@@ -23,8 +22,6 @@ last_update = last_update[0]
 
 # checking user's date
 today = datetime.datetime.now().strftime("%Y-%m-%d")
-
-#print("here 1")
 
 # update based on the updates in the original source (GWAS)
 if last_update != today:
@@ -55,7 +52,6 @@ if last_update != today:
     else:
         print(f"Error: {response.status_code}")
 
-#    print("here 2")
     # open the json file
     json_data = open("data.json") # change to data when using the actual data
 
@@ -67,7 +63,7 @@ if last_update != today:
                 last_update VARCHAR(50)
             ); """)
     conn.commit()
-#    print("here 3")
+
     # collect the update dates from json and add them to the temporary table
     associations = data["_embedded"]["associations"]
 
@@ -88,13 +84,14 @@ if last_update != today:
         update = association.get("lastUpdateDate")
 
         # not including rs ids that are not in correct format
+        # the datapoints with correct rs ids will be inserted to the database
         if rs_id != "not":
             cursor.execute("""
                             INSERT INTO updates (rs_id, last_update) 
                             VALUES (?, ?)""", 
                             (rs_id, update))
             conn.commit()
-#    print("here 4")
+
     # compare snp table in t2d and the temporary updates table to see if there are any changes
     compare_tables = cursor.execute("""SELECT rs_id, last_update FROM snp
                         EXCEPT
@@ -106,15 +103,15 @@ if last_update != today:
                         """)
     num_updates = cursor.fetchall()
 
-    print(len(num_updates))
-
+    # checking the length of the results from the union. If length is more than 0 it means there has been changes
     update_check = len(num_updates)
 
+    # deleting the temporary updates table once it has been compared to the old database
     conn.execute("DROP TABLE updates")
     
+    # the new today date is added to the access table
     cursor.execute("INSERT INTO accessed (date) VALUES (?)", (today,))
     conn.commit()
-#    print("here 5")
 
     # If the database is not updated the the old snp table will be removed and new one will be generated. 
     # The gene table will be checked based on the updated snp table
@@ -134,8 +131,6 @@ if last_update != today:
         
         cursor.execute(snp_table)
         conn.commit()
-
-#        print("here 6")
 
         # going through the json file and parsing the needed info from it
         for association in associations:
@@ -175,6 +170,7 @@ if last_update != today:
                         # write into the file
                         f_l.write(json.dumps(x, indent=4))
                 else:
+                    # give error if the connection to GWAS unsuccessful
                     print(f"Error: {response_rs.status_code}")
 
                 # open the json file
@@ -199,10 +195,13 @@ if last_update != today:
                             (rs_id, chro, pos, loc, p_value, ensembl_id, update))
                 conn.commit()
 
+                # closing the json file and remove the json file containing location info 
                 json_loci_data.close()
                 os.remove(file_loci)
+    
+    # removing the json file containing the data
+    os.remove(file)
 
-#    print("here 7")
 
     # checking if there are differences between teh genes in snp table and gene table in order to update the gene table
     not_in_table = cursor.execute("""SELECT DISTINCT ensembl_acc_code FROM snp
@@ -235,4 +234,3 @@ if last_update != today:
 
 # closing the connection to the database
 conn.close()
-#print("all done")
