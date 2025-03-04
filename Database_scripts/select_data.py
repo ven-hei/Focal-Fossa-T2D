@@ -4,19 +4,20 @@ import json
 import os
 import sqlite3
 
-conn = sqlite3.connect('Database/t2d.db')
+conn = sqlite3.connect('../Database/t2d.db')
  
 # cursor object
 cursor = conn.cursor()
 
-#### parsing the location of each rs_id
+# parsing the location of each rs_id
 rs_list_sql = cursor.execute("""SELECT rs_id FROM snp""")
 rs_list = cursor.fetchall()
 #print(rs_list)
 
+# to make it look like a normal internet search
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, kuten Gecko) Chrome/91.0.4472.124 Safari/537.36"
-} # remove when combining
+}
 file_loci = "loci.json"
 
 for rs in rs_list:
