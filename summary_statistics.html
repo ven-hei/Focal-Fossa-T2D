@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Summary Statistics{% endblock %}
+
+{% block content %}
+<div class="content container mt-5 p-4 bg-light shadow rounded">
+    <h1 class="text-center text-primary">Summary Statistics</h1>
+    
+    <form action="{{ url_for('summary_stats_result') }}" method="GET" class="mt-4">
+        <!-- Step 1: Select Summary Statistic Test -->
+        <div class="mb-3">
+            <h3 class="text-secondary">Select Summary Statistic:</h3>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="test_type" value="fst" id="fst_test" required>
+                <label class="form-check-label" for="fst_test">Fst</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="test_type" value="tajima" id="tajima_test" required>
+                <label class="form-check-label" for="tajima_test">Tajima's D</label>
+            </div>
+        </div>
+
+        <!-- Step 2: Population selection (Only for Tajima's D) -->
+        <div class="mb-3" id="population-section">
+            <h3 class="text-secondary">Choose Population(s):</h3>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="population" value="BEB" id="beb">
+                <label class="form-check-label" for="beb">Bengali </label><br>
+                <input class="form-check-input" type="checkbox" name="population" value="ITU" id="itu">
+                <label class="form-check-label" for="itu">Indian </label><br>
+                <input class="form-check-input" type="checkbox" name="population" value="PJL" id="pjl">
+                <label class="form-check-label" for="pjl">Punjabi </label><br>
+                <input class="form-check-input" type="checkbox" name="population" value="GIH" id="gih">
+                <label class="form-check-label" for="gih">Gujarati </label><br>
+            </div>
+        </div>
+
+        <!-- Step 3: Chromosome selection -->
+        <div class="mb-3" id="chromosome-section">
+            <h3 class="text-secondary">Select Chromosome:</h3>
+            <select name="chromosome" class="form-select" id="chromosome-select">
+                <option value="all">All Chromosomes (1-22)</option>
+                {% for i in range(1, 23) %}
+                    <option value="chr{{ i }}">Chromosome {{ i }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Step 4: Region Selection -->
+        <div class="mb-3" id="region-selection">
+            <h3 class="text-secondary">Enter Genomic Region:</h3>
+            <div class="input-group">
+                <input type="text" name="position_start" class="form-control" placeholder="Start Position">
+                <span class="input-group-text">to</span>
+                <input type="text" name="position_end" class="form-control" placeholder="End Position">
+            </div>
+        </div>
+
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary btn-lg">Analyse</button>
+        </div>
+    </form>
+</div>
+
+<!-- JavaScript to dynamically update input options -->
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+    var chromosomeSelect = document.getElementById("chromosome-select");
+    var regionSelection = document.getElementById("region-selection");
+
+    function toggleTestOptions() {
+        var selectedTest = document.querySelector('input[name="test_type"]:checked');
+        if (!selectedTest) return;
+
+        if (selectedTest.value === "fst") {
+            regionSelection.style.display = "block"; // Always show for FST
+            chromosomeSelect.querySelector("option[value='all']").disabled = true;  // Disable "All Chromosomes"
+        } else if (selectedTest.value === "tajima") {
+            regionSelection.style.display = "block"; // Show region selection if user selects it
+            chromosomeSelect.querySelector("option[value='all']").disabled = true; // Disable "All Chromosomes"
+        }
+    }
+
+    // Attach event listeners
+    var testRadios = document.querySelectorAll('input[name="test_type"]');
+    testRadios.forEach(function(radio){
+        radio.addEventListener("change", toggleTestOptions);
+    });
+
+    // Initialize display
+    toggleTestOptions();
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Summary Statistics Results{% endblock %}
+
+{% block content %}
+<div class="container mt-5 p-4 bg-light shadow rounded">
+    <h1 class="text-center text-primary">Summary Statistics Results</h1>
+
+    <div class="row">
+        <!-- ✅ Main Content Area -->
+        <div class="col-md-8">
+            {% if test_type == "fst" %}
+                <!-- ✅ FST Results -->
+                <div class="mb-4 p-3 border rounded bg-white">
+                    <h3 class="text-secondary">FST Analysis for Chromosome {{ selected_chromosome }}</h3>
+                    
+                    <!-- ✅ Display Available Region -->
+                    <p class="text-info">
+                        <strong>Selected Region:</strong> {{ available_range if available_range else "No data available" }}
+                    </p>
+
+                    {% if plot_paths %}
+                        <!-- ✅ Multi-Population FST Plots -->
+                        {% for population, plot_path in plot_paths.items() %}
+                            <div class="fst-plot mt-3">
+                                <h5 class="text-dark">FST for {{ population }}</h5>
+                                <div class="text-center">
+                                    <img src="{{ url_for('static', filename=plot_path.replace('static/', '')) }}?v={{ now }}" 
+                                         class="img-fluid rounded shadow" 
+                                         alt="FST Plot for {{ population }}">
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-danger"><strong>Error:</strong> No FST data available for the selected region.</p>
+                    {% endif %}
+                </div>
+            {% elif results %}
+                <!-- ✅ Tajima's D Results -->
+                {% for pop, stats in results.items() %}
+                    <div class="mb-4 p-3 border rounded bg-white">
+                        <h3 class="text-secondary">Population: {{ pop }}</h3>
+
+                        <!-- ✅ Display SNP Positions for this Population -->
+                        <p class="text-info">
+                            <strong>Available SNP positions for {{ pop }} (Chromosome {{ selected_chromosome }}):</strong> 
+                            {{ stats["Available_Range"] if stats.get("Available_Range") else "No SNPs available" }}
+                        </p>
+
+                        {% if "Error" in stats %}
+                            <p class="text-danger"><strong>Error:</strong> {{ stats["Error"] }}</p>
+                        {% endif %}
+
+                        <!-- ✅ Tajima's D Plot for this Population -->
+                        {% if "Tajima_Plot" in stats and stats["Tajima_Plot"] %}
+                            <div class="mt-3">
+                                <h5 class="text-dark">Tajima's D Visualization</h5>
+                                <div class="text-center">
+                                    <img src="{{ url_for('static', filename=stats['Tajima_Plot'].replace('static/', '')) }}?v={{ now }}" 
+                                         class="img-fluid rounded shadow" 
+                                         alt="Tajima's D Plot for {{ pop }}">
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-center text-muted">No summary statistics available.</p>
+            {% endif %}
+
+            <div class="text-center mt-4">
+                <a href="{{ url_for('summary_statistics') }}" class="btn btn-secondary">Back</a>
+            </div>
+        </div>
+
+        <!-- ✅ Sidebar: Significance Guide -->
+        <div class="col-md-2">
+            <div class="p-3 border rounded bg-white">
+                <h3 class="text-secondary">Interpretation Guide</h3>
+                
+                <!-- ✅ FST Significance -->
+                <h5 class="text-dark mt-3">FST (Population Differentiation)</h5>
+                <ul class="list-unstyled">
+                    <li><strong>FST < 0.05:</strong> Low differentiation</li>
+                    <li><strong>FST = 0.05 - 0.15:</strong> Moderate differentiation</li>
+                    <li><strong>FST = 0.15 - 0.25:</strong> High differentiation</li>
+                    <li><strong>FST > 0.25:</strong> Very high differentiation (statistically relevant)</li>
+                </ul>
+
+                <!-- ✅ Tajima's D Significance -->
+                <h5 class="text-dark mt-3">Tajima's D (Selection & Demography)</h5>
+                <ul class="list-unstyled">
+                    <li><strong>D ≈ 0:</strong> Neutral evolution</li>
+                    <li><strong>D < -2:</strong> Recent positive selection or population expansion (significant)</li>
+                    <li><strong>D > 2:</strong> Balancing selection or bottleneck (significant)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
