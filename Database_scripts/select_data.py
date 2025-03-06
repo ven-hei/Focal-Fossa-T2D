@@ -4,7 +4,7 @@ import json
 import os
 import sqlite3
 
-conn = sqlite3.connect('../Database/t2d.db')
+conn = sqlite3.connect('../Database/t2d_snp_portal.db')
  
 # cursor object
 cursor = conn.cursor()

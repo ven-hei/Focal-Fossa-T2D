@@ -18,7 +18,7 @@ app.config['SECRET_KEY'] = 'f41676960aa9bdaa1122637d89ef298f'
 
 # using path of web application as path of database to avoid error when deploy web app
 app_path = os.path.dirname(os.path.abspath(__file__))
-database_path = os.path.join(app_path, "Database/t2d_v3.db")
+database_path = os.path.join(app_path, "./Database/t2d_snp_portal.db")
 
 
 # Connect to available database
@@ -48,21 +48,20 @@ def home():
 def update_db():
     try:
         # running the database script to update the database
-        subprocess.run(["python", "Database_scripts/database_script.py"], check = True)
+        subprocess.run(["python", "../Database_scripts/database_script.py"], check = True)
     except Exception as e: # if update is unsuccessful error will be returned to the user
         return render_template("home.html", message = "Error updating database", last_updated = last_update_db())
     return redirect(url_for("home"))
 
-# define population abbreviation
-conn = get_db_connection()
-cursor = conn.cursor()
-cursor.execute("SELECT DISTINCT abbreviation, population FROM populations")
-populations=cursor.fetchall()   
-conn.close()
-population_abbr = {pop[0]:pop[1] for pop in populations}
-
+# define population abbreviation and population name dictionary
+population_abbr = {'BEB': 'Bengali',
+                   'GIH': 'Gujarati',
+                   'ITU': 'Indian',
+                   'PJL': 'Punjabi',
+                   'EUR': 'European'}
+ 
 # define population choices for summary statistics form
-populations_for_choices = [(pop[0], pop[1]) for pop in populations if pop[0]!="EUR"]
+populations_for_choices = [(pop,population_abbr.get(pop)) for pop in population_abbr.keys() if pop != 'EUR']
 populations_for_choices.append(("all","All"))
 
 # create a custom multi checkbox field

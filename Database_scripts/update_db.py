@@ -40,7 +40,7 @@ json_data = open("data.json") # change to data when using the actual data
 data = json.load(json_data)
 
 # Connecting to sqlite
-conn = sqlite3.connect('Database/t2d.db')
+conn = sqlite3.connect('../Database/t2d_snp_portal.db')
  
 # cursor object
 cursor = conn.cursor()
@@ -74,13 +74,4 @@ for association in associations:
                     VALUES (?, ?)""", 
                     (rs_id, update))
     conn.commit()
-        # cursor.execute("""
-        #             INSERT INTO gene (symbol, ensembl_acc_code, NCBI_gene_ID) 
-        #             VALUES (?, ?, ?)""", 
-        #             (mapped_gene, ensembl_id, ncbi_id))
-
-
-# compare_updates = cursor.execute("""SELECT rs_id FROM snp
-#                     EXCEPT
-#                     SELECT ensembl_acc_code FROM gene""")
-# last_genes = cursor.fetchall()
+conn.close()
