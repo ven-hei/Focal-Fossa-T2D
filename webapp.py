@@ -33,6 +33,7 @@ def last_update_db():
     last_updated = last_updated[0]
     return last_updated
 
+
 # define population abbreviation and population name dictionary
 population_abbr = {'BEB': 'Bengali', 
                    'GIH': 'Gujarati', 

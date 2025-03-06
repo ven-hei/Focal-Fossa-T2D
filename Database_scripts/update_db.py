@@ -76,13 +76,4 @@ for association in associations:
                     VALUES (?, ?)""", 
                     (rs_id, update))
     conn.commit()
-        # cursor.execute("""
-        #             INSERT INTO gene (symbol, ensembl_acc_code, NCBI_gene_ID) 
-        #             VALUES (?, ?, ?)""", 
-        #             (mapped_gene, ensembl_id, ncbi_id))
-
-
-# compare_updates = cursor.execute("""SELECT rs_id FROM snp
-#                     EXCEPT
-#                     SELECT ensembl_acc_code FROM gene""")
-# last_genes = cursor.fetchall()
+conn.close()

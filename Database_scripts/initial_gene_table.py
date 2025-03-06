@@ -10,6 +10,7 @@ import sqlite3
 app_path = os.path.dirname(os.path.abspath(__file__))
 database_path = os.path.join(app_path, '../Database/t2d_snp_portal.db')
 conn = sqlite3.connect(database_path)
+
  
 # cursor object
 cursor = conn.cursor()
@@ -18,7 +19,8 @@ cursor = conn.cursor()
 cursor.execute("DROP TABLE gene")
 # create a new gene table with the requred column names
 cursor.execute(""" CREATE TABLE gene (
-            symbol VARCHAR(100) NOT NULL,
+            gene_index INTEGER PRIMARY KEY AUTOINCREMENT,
+            symbol VARCHAR(100),
             full_name VARCHAR(255),
             description TEXT,
             chromosome INT, 
@@ -48,6 +50,9 @@ for id in gene_id:
         chro = one_id.iloc[0,18]
         start = one_id.iloc[0,20]
         end = one_id.iloc[0,21]
+        print(chro)
+        print(start)
+        print(end)
     
         # insert info to the gene table
         cursor.execute("""INSERT INTO gene (symbol, full_name, description, chromosome, start_pos, end_pos, ensembl_acc_code, NCBI_gene_ID, uniprot_ID) 
