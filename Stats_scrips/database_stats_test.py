@@ -2,7 +2,7 @@ import sqlite3
 import os
 
 # Path to your database
-db_path = "/Users/hananabdi/Desktop/Focal-Fossa-T2D/focal_fossa.db"
+db_path = "/Users/hananabdi/Desktop/Focal-Fossa-T2D/stats.db"
 
 # Path to your data folder
 data_folder = "/Users/hananabdi/Desktop/Focal-Fossa-T2D/"
