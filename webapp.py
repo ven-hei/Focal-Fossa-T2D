@@ -386,8 +386,8 @@ def summary_stats_result():
             fst_file.write('\n')
             fst_file.write(data_fst.to_string(index=True))
             fst_file.close()
-
-    return render_template('summary-stats-result.html',
+            
+            return render_template('summary-stats-result.html',
                            population_for_stats=population_for_stats,
                            stats_metric=stats_metric,
                            chromosome_no=chromosome_no,
@@ -395,6 +395,16 @@ def summary_stats_result():
                            end_position=end_position,
                            population_abbr=population_abbr,
                            fst_result=fst_result)
+    
+    # in case that user choose only Tajima's D, render this template without fst result 
+    return render_template('summary-stats-result.html',
+                           population_for_stats=population_for_stats,
+                           stats_metric=stats_metric,
+                           chromosome_no=chromosome_no,
+                           start_position=start_position,
+                           end_position=end_position,
+                           population_abbr=population_abbr,
+                           )
 
 
 # create route to summary statistics page
