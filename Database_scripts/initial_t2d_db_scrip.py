@@ -3,7 +3,9 @@ import sqlite3
 ### First time creating the tables in the database
 
 # connection to the database
-conn = sqlite3.connect('../Database/t2d.db')
+app_path = os.path.dirname(os.path.abspath(__file__))
+database_path = os.path.join(app_path, '../Database/t2d_snp_portal.db')
+conn = sqlite3.connect(database_path)
 cursor = conn.cursor()
 
 # defining the content of each table

@@ -4,6 +4,7 @@
 
 {% block content %} 
 <div class="main-homepage">
+    <!-- alert message when query is invalid -->
     <div class="homepage-alert">
         {% with messages = get_flashed_messages() %}
             {% if messages %}
@@ -21,6 +22,7 @@
         <p>T2D SNP Portal is a web application that can retrieve information on single nucleotide polymorphisms associated with Type 2 Diabetes</p>
         <br>
         <div class="search-section">
+                <!-- create a search form including selection options for SNP, genomic coordinate and gene name and a search box -->
                 <form action="/search-result" method="GET" style="display: flex; flex-direction: column; justify-content: top; row-gap: 20px;">
                     <div>
                         <input type="radio" name="search_option" value="SNP_search" checked > <big>SNP</big>
@@ -44,7 +46,7 @@
                         <tr>
                             <td></td>
                             <td>
-                                <p style="text-align: left;">Genomic coordinate: <a href="/search-result?query=1%3A10000000-20000000&search_option=location_search">1:10000000-20000000</a>,</p>
+                                <p style="text-align: left;">Genomic coordinate: <a href="/search-result?query=3%3A50000000-100000000&search_option=location_search">3:50000000-100000000</a>,</p>
                             </td>
                         </tr>
                         <tr>
@@ -57,7 +59,6 @@
     </div>
     <!-- creating a button to update the database-->
     <div>
-        <link rel="stylesheet" href="/static/update.css">
         <body>
             <div style="padding-left: 20px">
                 <form class="update_form" method="POST" action="/update_db" onsubmit="startLoading()">

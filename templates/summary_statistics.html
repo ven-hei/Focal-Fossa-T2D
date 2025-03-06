@@ -3,7 +3,7 @@
 {% block title %}Summary Statistics{% endblock %}
 
 {% block content %}
-
+<!-- flash messages in case there is no data in the database for the selected region -->
 <div class="summary-stats-alert">
     {% with messages = get_flashed_messages() %}
         {% if messages %}
@@ -22,8 +22,10 @@
         
         <div class="summary-statistics-form bg-light p-4 rounded shadow">
             <form action="/summary-stats-result" method="get">
+                <!-- multiple select options for population and summary statistics parameter fields, including 'all' option.
+                when user select 'all' option, it will uncheck other options in the same field. -->
                 <fieldset>
-                    <p><b>{{ form.population.label }}</b></p>
+                    {{ form.population.label (class="fs-3 fw-semibold") }}
                     <div style="display: flex; flex-direction: row; column-gap: 50px; justify-content: space-between;">
                         {% for subfield in form.population %}
                         <div>
@@ -37,13 +39,14 @@
                         </div>
                     {% endfor %}
                     </div>
+                    <!-- alert when user does not select any option in population field. -->
                     <div class="invalid-feedback" id="population-error" style="display: none;">
                         Please select at least one option.
                     </div>
                 </fieldset>
 
                 <fieldset>
-                    <p><b>{{ form.stats_parameter.label }}</b></p>
+                    {{ form.stats_parameter.label (class="fs-3 fw-semibold") }}
                     <div style="display: flex; flex-direction: row; column-gap: 50px">
                         {% for subfield in form.stats_parameter %}
                         <div>
@@ -57,34 +60,25 @@
                         </div>
                     {% endfor %}
                     </div>
+                    <!-- alert when user does not select any option in stats_parameter field. -->
                     <div class="invalid-feedback" id="stats-error" style="display: none;">
                         Please select at least one option.
                     </div>
-                </fieldset>
-                <div style="display: none;">
-                    {{form.calculate_option.label}}
-                    {{form.calculate_option}}
-                </div>
-                <fieldset>
+                    <br>
+                    <p class="fs-3 fw-semibold">Enter Genomic Region</p>
                     <div style="display: flex;flex-direction: row;column-gap: 50px; justify-content: space-between;">
                         <div>
-                            {{ form.chromosome_no.label(class="fs3 fw-bold") }}
+                            {{ form.chromosome_no.label(class="fs-6 fw-bold") }}
                             {{ form.chromosome_no(class="form-control form-control-lg") }}
                         </div>
                         <div>
-                            {{ form.start_position.label(class="fs3 fw-bold") }}
+                            {{ form.start_position.label(class="fs-6 fw-bold") }}
                             {{ form.start_position (class="form-control form-control-lg") }}
                         </div>
                         <div>
-                            {{ form.end_position.label(class="fs3 fw-bold") }}
+                            {{ form.end_position.label(class="fs-6 fw-bold") }}
                             {{ form.end_position (class="form-control form-control-lg") }}
                         </div>
-                    </div>
-                </fieldset>
-                <fieldset>
-                    <div>
-                        {{ form.window_size.label(class="fs3 fw-bold") }}
-                        {{ form.window_size(class="form-control form-control-lg",default=false) }}
                     </div>
                 </fieldset>
                 <div style="text-align: center;">
@@ -153,6 +147,30 @@
                 processingDialog.close();
             }
         });
+    
+    // Add thousand seperator to numbers in start and end position input fields
+    const addCommas = (num) => 
+        num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+    const removeNonNumeric = (num) => 
+        num.toString().replace(/[^0-9]/g, "");
+
+    const handleChange = (event) => {
+        event.target.value = addCommas(removeNonNumeric(event.target.value));
+    };
+
+    // Attach event listener to input field
+    document.addEventListener("DOMContentLoaded", () => {
+        const start_position_input = document.getElementById("start_position");
+        if (start_position_input) {
+            start_position_input.addEventListener("input", handleChange);
+        }
+        const end_position_input = document.getElementById("end_position");
+        if (end_position_input) {
+            end_position_input.addEventListener("input", handleChange);
+        }
+    });
+
     
 
 </script>
