@@ -37,7 +37,7 @@ json_data = open("data.json") # change to data when using the actual data
 # loading the data from the json file to the variable for parsing
 data = json.load(json_data)
 
-conn = sqlite3.connect('../Database/t2d.db')
+conn = sqlite3.connect('../Database/t2d_snp_portal.db')
  
 # cursor object
 cursor = conn.cursor()
