@@ -47,19 +47,23 @@ To install and run the application locally, follow these steps:
     ```bash
     pip install -r requirements.txt
     ```
-6. Download database from [here](https://drive.google.com/). Extract and put the Database folder in the same directory of the web application. Your directory will look like that:
+6. Download database from [here](https://drive.google.com/file/d/1wFYiXH1HxR4VGB75c433vSDtpr1z5IPA/view?usp=drive_link). Extract and put the Database folder in the same directory of the web application. Your directory will look like that:
     ```
     Focal-Fossa-T2D
     ├── Database
-    │   └── t2d_snp_portal.db
     ├── Database_scripts
+    │   ├── add_windows_index.py
+    │   ├── combining_dbs.py
+    │   ├── converting_location_info.py
     │   ├── database_script.py
     │   ├── initial_gene_table.py
     │   ├── initial_t2d_db_scrip.py
     │   ├── query_gwas.py
+    │   ├── read_liftOver_bed.py
     │   ├── select_data.py
     │   ├── update_db.py
     │   └── updating_genes.py
+    ├── locations.txt
     ├── README.md
     ├── requirements.txt
     ├── static
@@ -71,6 +75,8 @@ To install and run the application locally, follow these steps:
     │   ├── plots
     │   ├── stats.css
     │   └── update.css
+    ├── Stats_scrips
+    │   └── database_stats_test.py
     ├── templates
     │   ├── about.html
     │   ├── base.html

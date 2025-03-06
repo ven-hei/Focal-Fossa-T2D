@@ -27,7 +27,7 @@
                     <li>2.2 Data collection through API</li>
                     <li>3.3 Automatic updates on the database</li>
                 </ul>
-            <li><a onclick="showSection('content3')">3. Population statistics</a></li>
+            <li><a onclick="showSection('content3')">3. Statistical Analysis</a></li>
                 <ul id ="sub-title-content3" class = "sub-title-content">
                     <li>3.1 Stats test development</li>
                     <li>3.2 Genetic differentiation</li>
@@ -87,29 +87,93 @@
         <!-- Database construction content -->
         <div id="content2" class="document-section">
             <h2>Database construction</h2>
-            <p>The database is constructed using the following schema:</p>
-            <ul>
-                <li>Table 1</li>
-                <li>Table 2</li>
-                <li>Table 3</li>
-            </ul>
+            <br>
+            <p>The need to manipulate large-scale genomic data and store them efficiently, called for 
+                creating a Structured Query Language (SQL) database. SQL databases fall under the category
+                 of relational databases because they are based on a Relational Database Management System (RDBMS)
+                  (w3schools, 2019). Such systems allow for structured and indexed storing of data in tables that
+                   are broken down to columns and rows, enabling a specific and separate space for each entry. The 
+                   main data populating the database are genetic variants associated to T2D retrieved from Genome
+                    Wide Associations Studies (GWAS), meaning it is difficult to handle in terms of both scalability 
+                    and time-efficiency. The solution to that is provided by the core of a relational database, 
+                    as the implementation of primary and foreign keys on each table allow for quick information 
+                    retrieval without iteration through the whole dataset after each user query. A clear primary
+                     key establishes relationships between the tables, meanwhile the foreign one allows cross-referencing
+                      between the tables in our database, limiting redundancy. Such relations between the tables
+                       can be visualized through the database schema, a representation of how tables interact 
+                       within the database via primary or foreign keys.  </p>
+            <h3>1. Data collection for Statistical analysis</h3>
+            <p>Primary data for statistical analysis was obtained via the 1000 genome project website 
+                (https://www.internationalgenome.org/) using the wget shell command. The primary data included 
+                22 chromosome VCF files downloaded from the ftp server, each containing chromosome number,
+                 variant position, rs-ID and the sample IDs that represented an individual’s genotype on that specific position.  </p>
+            <p>In addition to the VCF files, the corresponding sample metadata file 
+                (integrated_call_samples_v3.20130502.ALL.panel) was also obtained by wget. 
+                The file provided detailed population metadata, including population ancestry and
+                 superpopulation classification, enabling later filtering for sub-population analysis.</p>
+            <p>Using a Bash job script, Bcftools was utilised to filter the sample metadata file, extracting 
+                only individuals belonging to the following South Asian (SAS) sub-populations:  Bengali (BEB), 
+                Indian (ITU), Punjabi (PJL), and Gujarati (GIH)</p>
+            <p>This resulted in four separate files with the sample IDs. These populations were selected because
+                 they were the available South Asian groups in both VCF files and the metadata file. The same
+                  filtering process was applied to extract European (EUR) samples, which were required for FST statistical comparison. </p>
+            <p>After obtaining the filtered sample list, they were used to extract the corresponding
+                 individual’s genotype data from the chromosome VCF files. This extraction involved Bcftools 
+                 to generate population specific VCF files, ensuring that only variants present in the selected
+                  population were retained. The newly filtered VCF files were then subjected to further processing,
+                   including the extraction of T2D-assossicated SNPs by cross-referencing with a curated T2D-SNP database.  </p>
+            <h3>2. Data collection through API</h2>
+            <p>The data regarding SNPs in the database was primarily collected through an Application Programming 
+                Interface (API) connection to Genome Wide Association Studies (GWAS). An API is a mechanism that 
+                allows two different software to communicate with each other. In this case, API is used as a bridge 
+                between the local database and a major genomic repository (GWAS) to retrieve up-to-date genomic information. 
+                To access the correct page in GWAS, MONDO_0005148 was retrieved for T2D. The API connection uses an url-link 
+                to GWAS (ebi.ac.uk/gwas/rest/api/efoTraits/MONDO_0005148/associations), where the SNPs associated with T2D are 
+                presented, and then the acquired page is read as a JSON-file for further parsing in order to remove unnecessary 
+                information. Rs-ID, Ensembl accession code, associated p-value and last update date on the datapoint 
+                were collected for each SNP entry on the page. In addition, a secondary connection through GWAS API was 
+                done to collect location information for each SNP that was originally identified. This connection utilised 
+                the previously retrieved rs-ID as part of the url-link (ebi.ac.uk/gwas/rest/api/singleNucleotidePolymorphisms/{rs_id}).
+                 From this page, the chromosome and the genomic position information was collected. </p>
+            <p>Once the SNP information was collected, the gget package was used to retrieve information regarding 
+                the genes that were linked to the SNPs. By using the Ensemble accession code retrieved from GWAS, 
+                gget was able to retrieve: the acronym, full name, description, location (including chromosome number, 
+                start and end positions) and accession codes for NCBI and Uniprot. </p>
+            <p>Alongside the SNP and gene information, the location information in different versions of the human
+                 genome were collected. However, due to the discrepancy between the location information in GWAS and
+                  1000 genome project, an index table was created to connect the location information of the two 
+                  different versions. GWAS uses GRCh38 version of the human genome that was published in 2013, 
+                  but 1000 genome project uses the previous version, GRCh37. In different versions, the location 
+                  information varies slightly and thus it was important to be able to map the two locations together
+                   in relation to the rs-ID. This data retrieval was done by using pyliftover package that 
+                   retrieves new location information based on the given old location. Pyliftover is a Python
+                    package that works similar way as the online tool, LiftOver, developed by UCSC. </p>
+            <h3>3. Automatic updates on the database</h3>
+            <p>With the future in mind, the ability to update the database was implemented. Depending on user
+                 input, the current date is compared against the date of the last update that is stored in the accessed-table. If the dates do not match, the update will proceed, creating an updated SNP, gene and index tables. If the dates are different, then an update-table will be created, which contains rs-IDs and the last update date from GWAS. After, the rs-IDs and last update dates in ‘update’ and ‘snp-tables’ are compared. If there are differences between the two tables, the old database is deleted, and the new one is generated the same way as mentioned above when creating the database. When updating the gene-table. The updating process can take from few minutes to over an hour. </p>
+            <p>With the future in mind, the ability to update the database was implemented. Depending on user input, the current date is compared against the date of the last update, which is stored in the accessed-table. If the dates do not match, the update will proceed further to update snp-, gene- and indexes-tables. First, a temporary update-table will be created, which contains the newest version of rs-IDs and the last update dates from GWAS. The update-table will then be compared to the content of the snp-table. If the contents do not match, the old snp table will be deleted and a new one will be generated the same way as stated above. If the snp-table is updated, the indexes-table will also be fully updated. </p>
+            <p>The Ensembl accession codes from new snp-table and the old gene-table are compared in order to identify whether there has been changes on the gene information. If changes are identified, the genes that are not found in the gene-table will be added, same way as described above. The entire updating process can take from few minutes to over an hour and therefore the user has the choice to update the database or just use the older version of it. </p>
         </div>
 
         <!-- Population statistics content -->
         <div id="content3" class="document-section">
-            <h2>Population statistics</h2>
-            <p></p>
-            <ul>
-                <li>/</li>
-                <li>/</li>
-                <li>/</li>
-            </ul>
+            <h2>Statistical Analusis</h2>
+            <h3>1. Stats test development</h3>
+            <p>The web application provides useful and insightful information into the evolutionary significance of the T2D-associated SNPs. In population genetics, selection statistics are used to assess whether certain genomic regions have been subjected to natural selection. Tajima’s D and Fixation index (FST) were selected as the clearest measures to identify patterns of natural selection.  </p>
+            <h3>2. Genetic Differentiation</h3>
+            <p>A common approach to explain evolutionary influences between populations is counting their genetic differentiation. The statistic to measure that is Fixation Index (FST), as it measures population differentiation in terms of genetic structure, quantifying genetic variance between two populations (Nagylaki, 1998). A score of 0 indicates that the two areas measured are identical and a score of 1 indicates complete separation and no shared alleles between population (Khan et al., 2021). Generally, a high FST value indicates a high level of differentiation, indicating limited gene flow and strong population structure, which suggests positive selection. On the other hand, a low value indicates shared genetic variation amongst the population. Simply, it measures how allele frequencies diverge among populations relative to the total genetic variance. This is explained as genes are influenced by genetic selection and drift.  </p>
+            <p>The webapp follows the standard approach of estimating FST using SNPs, focusing on four South Asian communities, using a European population as the comparison group for FST, as that is the group with the most readily available datasets. The webapp compares each population and each chromosome against the European population for the clearest indicators of where the genetic differentiation is occurring. FST is chosen as it can detect loci influenced by selection when comparing two populations, lending insight into evolutionary change. </p>
+            <h3>3. Neutrality </h3>
+            <p>Tajima’s D measures neutrality within a population by comparing two randomly chosen DNA sequences and averaging differences between the pairs of sequences (Thornton, 2005). This test can differentiate between DNA sequences that have evolved neutrally or due to an outside influence. A negative value, especially <-2 or below, indicates recent positive selection, whereas a higher value would indicate the maintenance of multiple alleles. The analyses are carried per chromosome for each population to more accurately identify where positive selection may be occurring. Additionally, the team chose to calculate Tajima’s D in sliding windows of 10,000 base pairs (Holmudden et al., 2024), which is standard, to capture more meaningful allele frequency patterns, enhancing statistical reliability and not demanding too much computational force. </p>
+            <h3>4. Data manipulation and statistical calculations </h3>
+            <p>Once the data had been processed, as explained earlier in data collection, the statistical analyses could proceed. For the FST calculations, job scripts automated the process. This approach is efficient and uses loops to streamline analyses within the HPC cluster. Within the script, the bcftools module is loaded to index and merge VCF files. Subsequently, the vcftools module is loaded to analyse the data and calculate FST values, allowing for meaningful population genetic comparisons. Similarly, to calculate Tajima D, the HPC cluster was used to employ a different jobscript, loop through each chromosome in 10,000 base pair windows for each population. These produced precalculated values that can be plotted and presented to the user, eliminating the need to manually open extremely large VCF files and then complete calculations based on user input, which takes significantly longer. Instead, the user can input a selected genomic region and the webapp retrieves the specific information for that region.  </p>
+            <p>Initially the GoogleDrive API was integrated into the webapp as the GitHub repository was unable to store such large data files. However, this proved to be slower than required of a webapp. Instead, once these calculations were complete, they were added to the database, indexed and subsequently used in the webapp for data retrieval. This is a much more efficient and user friendly. User input was important to consider as it is extremely useful to the user to be able to see more detailed information in a particular region than just to be able to see precalculated values over a whole chromosome which gives very nonspecific information, making the webapp less useful. Matplotlib was use and the style of plot chosen was scatter plots as visually they are easy to understand and visually clear.  </p>
         </div>
 
         <!-- Instruction content -->
         <div id="content4" class="document-section">
             <h2 style="text-align: center;"> User Guide</h2>
-    
+            <br>
             <h3>🔍 Searching for SNPs, Genomic Coordinates, and Mapped Genes</h3>
             <img src="{{ url_for('static', filename='images/home_page.png') }}" alt="Search" style="width: 100%; margin-bottom: 20px;">
             <p>Our web application offers <strong>three main search options</strong>:</p>
