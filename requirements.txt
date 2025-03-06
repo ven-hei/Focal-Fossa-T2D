@@ -38,6 +38,7 @@ prompt_toolkit==3.0.50
 ptyprocess==0.7.0
 pure_eval==0.2.3
 Pygments==2.19.1
+pyliftover==0.4.1
 pyparsing==3.2.1
 python-dateutil==2.9.0.post0
 pytz==2025.1
