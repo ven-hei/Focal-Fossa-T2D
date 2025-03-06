@@ -6,11 +6,11 @@ nucleotide polymorphisms (SNPs) associated with T2D and integrate them with popu
 genomic (specifically in South Asian population ) and functional data. 
 
 ## Features
-- **1**: 
-- **2**: 
-- **3**: 
-- **4**: 
-- **5**:
+**1**: Searching for SNPs using their rsID, genomic coordinates (chromosome:position), or mapped gene names<br>
+**2**: Information on genes mapped to SNPs, including functional terms.<br>
+**3**: Integrating population statistics, including Tajima's D and the fixation index (Fst), to identify genetic variants under positive selection.<br>
+**4**: Allowing users to choose population(s) and genomic region for summary statistics while providing visualizations of these parameters. Users can also download text files of summary statistics for further analysis.
+
 
 ## Prerequisites
 To successfully run this web application, you must have:
@@ -47,22 +47,30 @@ To install and run the application locally, follow these steps:
     ```bash
     pip install -r requirements.txt
     ```
-6. Download database and vcf files from [here](https://drive.google.com/). Extract and put the Database folder in the same directory of the web application. Your directory will look like that:
+6. Download database from [here](https://drive.google.com/). Extract and put the Database folder in the same directory of the web application. Your directory will look like that:
     ```
-    Focal-Fossa
+    Focal-Fossa-T2D
     ├── Database
-    │   ├── calculate_stats.py
-    │   ├── t2d.db
-    │   └── vcf_file
-    ├── image.png
+    │   └── t2d_snp_portal.db
+    ├── Database_scripts
+    │   ├── database_script.py
+    │   ├── initial_gene_table.py
+    │   ├── initial_t2d_db_scrip.py
+    │   ├── query_gwas.py
+    │   ├── select_data.py
+    │   ├── update_db.py
+    │   └── updating_genes.py
     ├── README.md
     ├── requirements.txt
     ├── static
+    │   ├── about.css
     │   ├── download
     │   ├── images
     │   ├── main.css
+    │   ├── main.js
     │   ├── plots
-    │   └── stats.css
+    │   ├── stats.css
+    │   └── update.css
     ├── templates
     │   ├── about.html
     │   ├── base.html
@@ -73,7 +81,6 @@ To install and run the application locally, follow these steps:
     │   ├── summary_statistics.html
     │   └── summary-stats-result.html
     ├── test.py
-    ├── venv
     └── webapp.py
     ```
 7. Start the application:
@@ -106,3 +113,5 @@ We welcome contributions from the community. To contribute, please follow these 
 
 ## Contact
 For any questions or feedback, please contact us at [bt24807@qmul.ac.uk](mailto:bt24807@qmul.ac.uk).
+
+Developed by [Venla](http://github.com/ven-hei), [Vaia](http://github.com/vlvchu), [Hanan](http://github.com/Hahahma), [Sammi](http://github.com/Zhou-S0), [Linh](http://github.com/ngduylinh911)

@@ -7,35 +7,73 @@
     <div class="document-sidebar">
         <h2>Table of Contents</h2>
         <ul>
+            <!-- List all parts of documentation, when user choose specific part, content of that part will display -->
             <li><a onclick="showSection('content1')">1. Introduction</a></li>
-                <ul id ="sub-title-content1" class = "sub-title-content active">
+                <!-- <ul id ="sub-title-content1" class = "sub-title-content active">
                     <li>1.1. Project rationalde and motivation</li>
                     <li>1.2 Project objectives</li>
                     <li>1.3 General application features</li>
                     <li>1.4 Overview of technologies used</li>
-                </ul>
-            <li><a onclick="showSection('content2')">2.Web application features</a></li>
+                </ul> -->
+            <!-- <li><a onclick="showSection('content2')">2.Web application features</a></li>
                 <ul id ="sub-title-content2" class = "sub-title-content">    
                     <li>2.1 Feature 1</li>
                     <li>2.2 Feature 2</li>
                     <li>2.3 Feature 3</li>
+                </ul> -->
+            <li><a onclick="showSection('content2')">2. Database construction</a></li>
+                <ul id ="sub-title-content2" class = "sub-title-content">
+                    <li>2.1 Data collection for Statistical analysis</li>
+                    <li>2.2 Data collection through API</li>
+                    <li>3.3 Automatic updates on the database</li>
                 </ul>
-            <li><a onclick="showSection('content3')">3. Database construction</a></li>
+            <li><a onclick="showSection('content3')">3. Population statistics</a></li>
                 <ul id ="sub-title-content3" class = "sub-title-content">
-                    <li>3.1 Table 1</li>
-                    <li>3.2 Table 2</li>
-                    <li>3.3 Table 3</li>
+                    <li>3.1 Stats test development</li>
+                    <li>3.2 Genetic differentiation</li>
+                    <li>3.3 Neutrality</li>
+                    <li>3.4 Data manipulation and statistical calculations</li>
                 </ul>
-            <li><a onclick="showSection('content4')">4. Population statistics</a></li>
-            <li><a onclick="showSection('content5')">5. Manual</a></li>
-            <li><a onclick="showSection('content6')">6. Contact</a></li>
+            <li><a onclick="showSection('content4')">4. User guide</a></li>
+            <li><a onclick="showSection('content5')">5. Contact</a></li>
         </ul>
     </div>
     <div class="document-content">
+        <!-- Introduction content -->
         <div id="content1" class="document-section active">
             <h2>Introduction</h2>
-            <p>Welcome to the documentation page. This guide will help you understand the features and usage of our project.</p>
+            <br>
+            <p style="text-align: justify;">Type 2 diabetes (T2D) is a metabolic disorder characterised by several malfunctioning mechanisms around
+                 the pathways that regulate the release and action of insulin (Galicia-Garcia et al., 2020). The aetiology
+                  of T2D is complex, influenced by genetic, metabolic and environmental factors. The National institute
+                   for Health and Care (NICE) estimated more than 5 million people in the UK will be diagnosed with T2D 
+                   by 2025 (National Institute for Health and Care Excellence, 2024). Despite these factors, predisposition
+                    to T2D may vary across ancestries. For example, T2D can develop around 45 years of age (NIDDK, 2017).
+                     However, from further investigation, it was discovered that the South Asian population are known to 
+                     develop T2D earlier compared to other populations. </p>
+            <br>
+            <p style="text-align: justify;">T2D SNP Portal was designed to aid researchers with an accessible, user-friendly and interactive tool
+                 for accessing and analysing population genomic data, specifically focusing on Type 2 Diabetes associated 
+                 SNPs in South Asian populations. Population genomics data is critical for various fields such as
+                  evolutionary biology, genetic epidemiology and precision medicine. By integrating under-studied population
+                   datasets, the platform enables users to explore, retrieve and interpret genetic variation related to T2D,
+                    facilitating research into disease susceptibility and functional annotations. A dedicated portal for 
+                    South Asians allows the identification of disease-associated SNPs through positional mapping and 
+                    computational analysis, understanding patient’s responses to certain treatments and environmental factors 
+                    (International Human Genome Sequencing Consortium, 2001) that could deduce why the South Asian population 
+                    are diagnosed with T2D a decade earlier than other populations (Loh et al., 2022). </p>
+            <br>
+            <p style="text-align: justify;">The webapp is a streamlined application designed to help users/researchers with the retrieval of limited data
+                 and information regarding T2D associated SNPs, specifically focused on the South Asian population – which is
+                  an underserved population with sparse data with genetic database online. Recognising this issue, the team
+                   developed T2D SNP Portal with the philosophy of creating a user-friendly and interactive platform that 
+                   clearly and efficiently communicates the available information in a structured manner for the user
+                    to help in research for South Asians. While it’s understood that T2D SNP Portal doesn’t rival or can 
+                    replace the more established webapps like Ensemble, T2D Knowledge portal or Uniprot, there is future 
+                    potential for scalability to achieve those levels.  </p>
         </div>
+
+        <!-- Web application features content
         <div id="content2" class="document-section">
             <h2>Web application features</h2>
             <p>Our web application provides the following features:</p>
@@ -44,8 +82,10 @@
                 <li>Feature 2</li>
                 <li>Feature 3</li>
             </ul>
-        </div>
-        <div id="content3" class="document-section">
+        </div> -->
+
+        <!-- Database construction content -->
+        <div id="content2" class="document-section">
             <h2>Database construction</h2>
             <p>The database is constructed using the following schema:</p>
             <ul>
@@ -54,7 +94,9 @@
                 <li>Table 3</li>
             </ul>
         </div>
-        <div id="content4" class="document-section">
+
+        <!-- Population statistics content -->
+        <div id="content3" class="document-section">
             <h2>Population statistics</h2>
             <p></p>
             <ul>
@@ -63,20 +105,75 @@
                 <li>/</li>
             </ul>
         </div>
-        <div id="content5" class="document-section">
-            <h2>Manual</h2>
-            <p>The manual provides detailed instructions on how to use the application.</p>
+
+        <!-- Instruction content -->
+        <div id="content4" class="document-section">
+            <h2 style="text-align: center;"> User Guide</h2>
+    
+            <h3>🔍 Searching for SNPs, Genomic Coordinates, and Mapped Genes</h3>
+            <img src="{{ url_for('static', filename='images/home_page.png') }}" alt="Search" style="width: 100%; margin-bottom: 20px;">
+            <p>Our web application offers <strong>three main search options</strong>:</p>
+            <ul>
+                <li><strong>SNP Search:</strong> Enter the <em>rsID</em> of the SNP (e.g., <code>rs11677370</code>).</li>
+                <li><strong>Genomic Coordinate Search:</strong> Enter the <em>genomic region</em> in the format <code>chromosome:start-end</code> (without spaces), e.g., <code>1:100000-20000000</code>.</li>
+                <li><strong>Gene Name Search:</strong> Enter the <em>gene name</em> (case-insensitive).</li>
+            </ul>
+            <p>Once you input your query, click <strong>Search</strong> to retrieve the results.</p>
+            <img src="{{ url_for('static', filename='images/search_result.png') }}" alt="Search Results" style="width: 100%; margin-bottom: 20px;">
+            <h3>📋 Search Results</h3>
+            <p>The application will display a <strong>result table</strong>, including: <strong>SNP rsID</strong>,<strong>P-value</strong>,<strong>Genomic position</strong>,<strong>Mapped gene</strong>.</p>
+            <div class="highlight">
+                The gene name will appear as a <strong>clickable link</strong>. Clicking on it will redirect you to the <strong>Gene Information Page</strong>, which provides:
+                <ul>
+                    <li>Functional terms of the gene</li>
+                    <li>Gene IDs in major databases (NCBI, Ensembl, UniProt)</li>
+                    <li>A direct link to NCBI’s official website for further details</li>
+                </ul>
+            </div>
+            
+            <h3>📊 Population Summary Statistics Analysis</h3>
+            <p><em>Only available for Genomic Coordinate and Mapped Gene searches</em></p>
+            <ul>
+                <li>Select populations of interest.
+                <li>Choose summary statistics parameters to detect natural selection:
+                    <ul>
+                        <li><strong>Tajima’s D</strong></li>
+                        <li><strong>Fixation Index (Fst)</strong></li>
+                    </ul>
+                </li>
+                <li>The system will use either the <strong>entered genomic region</strong> or the <strong>mapped gene's location</strong> for statistical analysis.</li>
+                <li>If users wish to analyze a <strong>different region</strong>, they can modify the coordinates before running the analysis.</li>
+            </ul>
+            
+            <h3>📌 Summary Statistics Page</h3>
+            <ul>
+                <li>Descriptions of the studied populations from the <strong>1000 Genomes Project</strong>, including sample locations and ancestry information.</li>
+                <li>Graphical visualizations of summary statistics for easier interpretation.</li>
+                <li>Downloadable text files for further analysis.</li>
+            </ul>
+            <p><strong>Direct Access from the Navigation Bar:</strong></p>
+            <p>Users can directly access the <strong>"Summary Statistics"</strong> section from the navigation bar to freely select and analyze a genomic region, independent of the search results.</p>
+            
+            <h3>🚀 Get Started Now!</h3>
+            <p>Enter a search query or select a genomic region to explore important SNP and population genetics data!</p>
         </div>
-        <div id="content6" class="document-section">
+
+        <!-- Contact -->
+        <div id="content5" class="document-section">
             <h2>Contact</h2>
-            <p>If you have any questions or feedback, please contact us at
+            <p>If you have any questions or feedback, please contact us at <a href="mailto:bt24807@qmul.ac.uk"> bt24807@qmul.ac.uk</a>.</p>
+            Developed by <a href="http://github.com/ven-hei">Venla</a>, 
+            <a href="http://github.com/vlvchu">Vaia</a>, 
+            <a href="http://github.com/Hahahma">Hanan</a>, 
+            <a href="http://github.com/Zhou-S0">Sammi</a>, 
+            <a href="http://github.com/ngduylinh911">Linh</a>.
         </div>
     </div>
 </div>
 
 <script>
     function showSection(sectionId) {
-        // Hide all sections
+        // Hide all sections by default
         document.querySelectorAll('.document-section').forEach(section => {
             section.classList.remove('active');
         });

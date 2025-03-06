@@ -7,7 +7,9 @@ import os
 import sqlite3
 
 # Connecting to sqlite
-conn = sqlite3.connect('../Database/t2d_snp_portal.db')
+app_path = os.path.dirname(os.path.abspath(__file__))
+database_path = os.path.join(app_path, '../Database/t2d_snp_portal.db')
+conn = sqlite3.connect(database_path)
  
 # cursor object
 cursor = conn.cursor()

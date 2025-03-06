@@ -4,6 +4,7 @@
 
 {% block content %}
     <div>
+        <!-- flash alert message when the gene is not found in the database -->
         <div class="homepage-alert" style="align-items: top;">
             {% with messages = get_flashed_messages() %}
                 {% if messages %}
@@ -16,6 +17,7 @@
             {% endwith %}
         </div>
     </div>
+    
     <!-- going through the gene info from the database -->
     {% if gene_info is not none %}
       <div class="content">
@@ -50,7 +52,7 @@
         </tr>
         <tr>
             <th>Uniprot gene ID </th>
-            <td>{{ gene_info.NCBI_gene_ID}}</td>
+            <td>{{ gene_info.uniprot_ID}}</td>
         </tr>
       </table>
     </div>

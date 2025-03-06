@@ -4,6 +4,7 @@
 
 {% block content %} 
     <div class="result-page">
+        <!-- Summary statistics only display when user search for genomic coordinate search and gene search. -->
         {%if search_option != 'SNP_search' %}  
         <div class="stats-container">
             <div class="accordion" id="accordionExample">
@@ -16,6 +17,8 @@
                 <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
                     <div class="accordion-body">
                         <form action="/summary-stats-result" method="get">
+                            <!-- multiple select options for population and summary statistics parameter fields, including 'all' option.
+                            when user select 'all' option, it will uncheck other options in the same field. -->
                             <fieldset>
                                 <p><i>{{ form.population.label }}</i></p>
                                 {% for subfield in form.population %}
@@ -29,6 +32,7 @@
                                     <label for="{{ subfield.id }}">{{ subfield.label.text }}</label>
                                     </div>
                                 {% endfor %}
+                                <!-- alert when user does not select any option in population field. -->
                                 <div class="invalid-feedback" id="population-error" style="display: none;">
                                     Please select at least one option.
                                 </div>
@@ -49,57 +53,55 @@
                                     </div>
                                 {% endfor %}
                                 </div>
+                                <!-- alert when user does not select any option in summary statistics parameter field. -->
                                 <div class="invalid-feedback" id="stats-error" style="display: none;">
                                     Please select at least one option.
                                 </div>
                             </fieldset>
-                            <br>
+                            <div class="fw-bold text-danger" style="margin:20px 0">
+                                <u><i>NOTE:</i></u> We will use the region you've searched for summary statistics.
+                            </div>
+                            <!-- create an option for users to change the region for summary statistics. -->
                             <fieldset> 
-                                <b><u><i>NOTE:</i></u> We will use precalculated data for summary statistics (default window size is <span style="color:red">10kb</span>)</b>
-                                <div style="display: flex; column-gap: 5px;">
-                                    <div>{{ form.calculate_option(id="calculate_option") }}</div>
-                                    <div>{{ form.calculate_option.label(for="calculate_option") }}</div>
+                                <div style="display: flex; flex-direction: row; column-gap: 10px;">
+                                    <div>{{ form.region_input(class="form-check-input") }}</div>
+                                    <div>{{ form.region_input.label(class="fs3 fst-italic") }}</div>
                                 </div>
-                                {% if form.calculate_option.data == True %} 
+                            </fieldset>
+                            <fieldset>
+                                <!-- if user choose to change region, it will show input fields for users to input chromosome number, start and end position. -->
+                                {% if form.region_input.data == 'True' %}
                                     <div id="user_input" style="display: block;">
                                         <div>
                                             {{ form.chromosome_no.label(class="fs3 fw-bold") }}
-                                            {{ form.chromosome_no(class="form-control form-control-lg") }}
+                                            {{ form.chromosome_no(class="form-control form-control-sm") }}
                                         </div>
                                         <div style="display: flex;flex-direction: row; justify-content: space-between;">
                                             <div>
                                                 {{ form.start_position.label(class="fs3 fw-bold") }}
-                                                {{ form.start_position (class="form-control form-control-lg") }}
+                                                {{ form.start_position (class="form-control form-control-sm") }}
                                             </div>
                                             <div>
                                                 {{ form.end_position.label(class="fs3 fw-bold") }}
-                                                {{ form.end_position (class="form-control form-control-lg") }}
+                                                {{ form.end_position (class="form-control form-control-sm") }}
                                             </div>
-                                        </div>
-                                        <div>
-                                            {{ form.window_size.label(class="fs3 fw-bold") }}
-                                            {{ form.window_size(class="form-control form-control-lg") }}
                                         </div>
                                     </div>
                                 {% else %}
                                     <div id="user_input" style="display: none;">
                                         <div>
                                             {{ form.chromosome_no.label(class="fs3 fw-bold") }}
-                                            {{ form.chromosome_no(class="form-control form-control-lg") }}
+                                            {{ form.chromosome_no(class="form-control form-control-sm") }}
                                         </div>
                                         <div style="display: flex;flex-direction: row; justify-content: space-between;">
                                             <div>
                                                 {{ form.start_position.label(class="fs3 fw-bold") }}
-                                                {{ form.start_position (class="form-control form-control-lg") }}
+                                                {{ form.start_position (class="form-control form-control-sm") }}
                                             </div>
                                             <div>
                                                 {{ form.end_position.label(class="fs3 fw-bold") }}
-                                                {{ form.end_position (class="form-control form-control-lg") }}
+                                                {{ form.end_position (class="form-control form-control-sm") }}
                                             </div>
-                                        </div>
-                                        <div>
-                                            {{ form.window_size.label(class="fs3 fw-bold") }}
-                                            {{ form.window_size(class="form-control form-control-lg") }}
                                         </div>
                                     </div>
                                 {% endif %}
@@ -107,7 +109,7 @@
                             <div style="display: flex;justify-content: center;margin-top: 20px;">
                                 <button class="btn btn-primary" style="text-align: center;" id="analyse" type="submit" >Analyse</button>
                             </div>
-                            
+                            <!-- display processing dialog to notify users that the page is processing. -->
                             <dialog id = "processing">
                                 <p>Processing...</p>
                                 <p>It will take a while up to few minutes. Please to be patient</p>
@@ -124,32 +126,28 @@
         {% endif %}
         <div class="result-container">
             {% if search_option == 'SNP_search' %}
-            <div style="margin: 0 300px;">
+            <div style="margin: 0 250px;">
             {% else %}
             <div>
             {% endif %}
                 <div>
                     <div style="text-align: center;"><h2>Search result</h2></div>
+                    <!-- display what user are searching for -->
                     <div>
-                        <div><p>Result for: <i>
-                            {% if search_option == 'SNP_search' %}
-                                SNP
-                            {% elif search_option == 'location_search' %}
-                                genomic corrdinate
-                            {% elif search_option == 'mapped_gene_search' %} 
-                                gene
-                            {% else %}
-                                all
+                        <p>Result for: <i>
+                            {% if search_option == 'SNP_search' %} SNP
+                            {% elif search_option == 'location_search' %} genomic corrdinate  
+                            {% else %} gene
                             {% endif %}
                             "{{ query }}"
-                        </i></p></div>
-
+                        </i></p>
                     </div>
                 </div>
         
-                <!-- show table of results  -->
+                <!-- results  -->
                 <div>
                     {% if results_displayed %}
+                        <!-- option for users to choose number of results displayed per page -->
                         <div>
                             <form action="" method="get">
                                 Display
@@ -164,6 +162,7 @@
                                 results per page
                             </form>   
                         </div>
+                        <!-- show table of results -->
                         <div>
                             <table class="table table-striped">
                                 <tr>
@@ -180,69 +179,53 @@
                                     <td>{{ snp.p_value }}</td>
                                     <td>{{ snp.location }}</td>
                                     <td>
+                                        {% if snp.symbol == "nan" %}
+                                            {{ snp.symbol}}
+                                        {% else %}
                                         <a href="/gene/{{ snp.symbol}}" target="_self">
                                             {{ snp.symbol}}
                                         </a>
+                                        {% endif %}
                                     </td>
                                 </tr>
                                 {% endfor %}
                             </table>
                         </div>
+                        <!-- pagination -->
                         <div style="width: 100%; display: flex; justify-content: space-between;padding-right: 50px;">
+                            <!-- show which results are displayed -->
                             <div>
                                 <i>Showing 
-        
                                 {% if page * number_of_result_displayed <= number_of_results %}
                                     {{ (page-1)*number_of_result_displayed+1 }} - {{ page * number_of_result_displayed }} of {{ number_of_results }}
                                 {% else %}
                                     {{ (page-1)*number_of_result_displayed+1 }} - {{ number_of_results }} of {{ number_of_results }}
                                 {% endif %}
-        
                                 results</i>
                             </div>
-                            <div> <!-- select page to display -->
-                                {% if number_of_pages >1 %}
+                            <!-- select page to display -->
+                            <div> 
+                                {% if total_pages >1 %}
                                     {% if page != 1 %}
                                         <a href="/search-result?query={{ query }}&search_option={{ search_option }}&page=1&number_of_result_displayed={{ number_of_result_displayed }}">« First</a>
                                     {% endif %}
-        
                                     {% if page > 1 %}
                                         <a href="/search-result?query={{ query }}&search_option={{ search_option }}&page={{ page - 1 }}&number_of_result_displayed={{ number_of_result_displayed }}">	&#60; Previous</a>
                                     {% endif %}
-                                    
-        
-                                    {% if number_of_pages <=5 %}
-                                        {% for p in range(1, number_of_pages + 1) %}
+                                    {% for p in range(page-2,page+3) %}
+                                        {% if p >= 1 and p <= total_pages %}
                                             {% if p == page %}
                                                 <strong>{{ p }}</strong>
                                             {% else %}
                                                 <a href="/search-result?query={{ query }}&search_option={{ search_option }}&page={{ p }}&number_of_result_displayed={{ number_of_result_displayed }}">{{ p }}</a>
                                             {% endif %}
-                                        {% endfor %}
-                                    {% else %}
-                                        <!-- {% if page != 1 %}
-                                            <a href="/search-result?query={{ query }}&search_option={{ search_option }}&page=1&number_of_result_displayed={{ number_of_result_displayed }}">1 .....</a>
-                                        {% endif %} -->
-                                        {% for p in range(page-2,page+3) %}
-                                            {% if p >= 1 and p <= number_of_pages %}
-                                                {% if p == page %}
-                                                    <strong>{{ p }}</strong>
-                                                {% else %}
-                                                    <a href="/search-result?query={{ query }}&search_option={{ search_option }}&page={{ p }}&number_of_result_displayed={{ number_of_result_displayed }}">{{ p }}</a>
-                                                {% endif %}
-                                            {% endif %}
-                                        {% endfor %}    
-                                        <!-- {% if page != number_of_pages %}
-                                            <a href="/search-result?query={{ query }}&search_option={{ search_option }}&page={{ number_of_pages }}&number_of_result_displayed={{ number_of_result_displayed }}">.....{{ number_of_pages }}</a>
-                                        {% endif %} -->
-                                    {% endif %}
-                                    
-                                    {% if page < number_of_pages %}
+                                        {% endif %}
+                                    {% endfor %}    
+                                    {% if page < total_pages %}
                                         <a href="/search-result?query={{ query }}&search_option={{ search_option }}&page={{ page + 1 }}&number_of_result_displayed={{ number_of_result_displayed }}">Next &#62;</a>
                                     {% endif %}
-        
-                                    {% if page != number_of_pages %}
-                                        <a href="/search-result?query={{ query }}&search_option={{ search_option }}&page={{ number_of_pages }}&number_of_result_displayed={{ number_of_result_displayed }}">Last »</a>
+                                    {% if page != total_pages %}
+                                        <a href="/search-result?query={{ query }}&search_option={{ search_option }}&page={{ total_pages }}&number_of_result_displayed={{ number_of_result_displayed }}">Last »</a>
                                     {% endif %}
                                 {% endif %}
                             </div>
@@ -256,15 +239,27 @@
     </div> 
     <script>
 
-        // define function for users choose 'calculate' option it will show input fields
-        document.getElementById("calculate_option").addEventListener("change", function() {
-            if (this.checked) {
-            document.getElementById("user_input").style.display = 'block';
-            } else {
-            document.getElementById("user_input").style.display = 'none';
-            }
-        });  
+        // define function for users change region of interest it will show input fields
+        document.addEventListener("DOMContentLoaded", function() {
+            // Check the state of region_input on page load
+            var regionInput = document.getElementById("region_input");
+            var userInput = document.getElementById("user_input");
 
+            if (regionInput.checked) {
+                userInput.style.display = 'block';
+            } else {
+                userInput.style.display = 'none';
+            }
+
+            // Add event listener for change event
+            regionInput.addEventListener("change", function() {
+                if (this.checked) {
+                    userInput.style.display = 'block';
+                } else {
+                    userInput.style.display = 'none';
+                }
+            });
+        });
 
         // define function for users choose 'all' option it will uncheck above option
         function toggleSelectAll(fieldName) {
@@ -304,7 +299,6 @@
             } else {
             document.getElementById('stats-error').style.display = 'none';
             }
-
             if (stats_checkboxes.length > 0 && population_checkboxes.length > 0) { 
                 processingDialog.showModal(); // Show processing popup
                 event.target.form.submit(); // Submit the form if valid
@@ -318,5 +312,27 @@
             }
         });
 
+        // Add thousand seperator to numbers in start and end position input fields
+        const addCommas = (num) => 
+        num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+        const removeNonNumeric = (num) => 
+            num.toString().replace(/[^0-9]/g, "");
+
+        const handleChange = (event) => {
+            event.target.value = addCommas(removeNonNumeric(event.target.value));
+        };
+
+        // Attach event listener to start and end position input fields
+        document.addEventListener("DOMContentLoaded", () => {
+            const start_position_input = document.getElementById("start_position");
+            if (start_position_input) {
+                start_position_input.addEventListener("input", handleChange);
+            }
+            const end_position_input = document.getElementById("end_position");
+            if (end_position_input) {
+                end_position_input.addEventListener("input", handleChange);
+            }
+        });
     </script>   
 {% endblock %}

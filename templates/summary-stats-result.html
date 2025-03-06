@@ -5,7 +5,7 @@
 {% block content %}
 <div class="content">
     <h1 style="text-align: center;">Summary statistics</h1>
-
+    <!-- show descriptive information about the populations -->
     <div class="accordion" id="accordionPanelsStayOpenExample">
         <div class="accordion-item">
             <h2 class="accordion-header" id="panelsStayOpen-headingOne">
@@ -79,7 +79,7 @@
             </div>
         </div>
     </div>
-
+    <!-- show summary statistics for the given region -->
     <div class="accordion" id="accordionExample">
         <div class="accordion-item">
           <h2 class="accordion-header" id="headingOne">
@@ -89,77 +89,111 @@
           </h2>
           <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
             <div class="accordion-body">
-                {% if 'tajimas_d' in stats_metric %}
-                <table class="plot-table"> 
-                    <tr>
-                        <th>
-                            <div>
-                                <h5>Tajima's D:</h3>
+                <div style="display: flex;column-gap: 20px;"> 
+                    <div style="flex:1">
+                        <!-- plot of Tajima's D for the given region and download button for the summary statistics file -->
+                        {% if 'tajimas_d' in stats_metric %}
+                            <table class="plot-table"> 
+                                <tr>
+                                    <th>
+                                        <div>
+                                            <h4>Tajima's D:</h4>
+                                        </div>
+                    
+                                    </th>
+                                    <th>
+                                        <div style="text-align: right;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+                                                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/>
+                                                <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708z"/>
+                                            </svg>
+                                            <a href="static/download/summary_statistics(tajimas_d).txt" download> Download summary statistics file for Tajima's D</a>
+                                        </div>
+                                    </th>
+                                </tr>
+                                {% for pop in population_for_stats %}
+                                    <tr>
+                                        <td colspan="2">
+                                            <div style="padding-top: 40px;">
+                                                <h4 style="color: red;">{{ population_abbr[pop] }}</h4>
+                                            </div>
+                                            <div>
+                                                <img style="width: 100%;" src="static/plots/plot_tajimas_d_{{ pop }}.png" alt="Tajima's D plot for {{ pop }}">
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                        {% endif %}
+                        <!-- plot of FST for the given region and download button for the summary statistics file -->
+                        {% if 'fst' in stats_metric %}
+                            <table class="plot-table">
+                                <tr>
+                                    <th>
+                                        <div>
+                                            <h4>Fixation index (FST):</h4>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        {% if fst_result is not none %}
+                                        <div style="text-align: right;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+                                                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/>
+                                                <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708z"/>
+                                            </svg>
+                                            <a href="static/download/summary_statistics(fst).txt" download> Download summary statistics file for FST</a>
+                                        </div>
+                                        {% endif %}
+                                    </th>
+                                </tr>
+                                {% if fst_result is none %}
+                                    <tr>
+                                        <td colspan="2">
+                                            <p style="color: red;">There is no data available for FST in the given region.</p>
+                                        </td>
+                                {% else %}
+                                    {% for population in population_for_stats %}
+                                        <tr>
+                                            <td colspan="2">
+                                                <div style="padding-top: 40px;">
+                                                    <h6 style="color: red">{{ population_abbr[population] }} vs European</h6>
+                                                </div>
+                                                <div>
+                                                    <img style="width: 100%;" src="static/plots/plot_fst_EUR_{{population}}.png" alt="FST plot for {{ population_abbr[population] }} vs European">
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                {% endif %}
+                            </table>
+                        {% endif %}
+                    </div>
+                    <div style="width: 250px;">
+                        <div class="">
+                            <div class="p-3 border rounded bg-white">
+                                <h3 class="text-secondary">Interpretation Guide</h3>
+                                
+                                <!-- ✅ FST Significance -->
+                                <h5 class="text-dark mt-3">FST (Population Differentiation)</h5>
+                                <ul class="list-unstyled">
+                                    <li><strong>FST < 0.05:</strong> Low differentiation</li>
+                                    <li><strong>FST = 0.05 - 0.15:</strong> Moderate differentiation</li>
+                                    <li><strong>FST = 0.15 - 0.25:</strong> High differentiation</li>
+                                    <li><strong>FST > 0.25:</strong> Very high differentiation (statistically relevant)</li>
+                                </ul>
+                
+                                <!-- ✅ Tajima's D Significance -->
+                                <h5 class="text-dark mt-3">Tajima's D (Selection & Demography)</h5>
+                                <ul class="list-unstyled">
+                                    <li><strong>D ≈ 0:</strong> Neutral evolution</li>
+                                    <li><strong>D < -2:</strong> Recent positive selection or population expansion (significant)</li>
+                                    <li><strong>D > 2:</strong> Balancing selection or bottleneck (significant)</li>
+                                </ul>
                             </div>
-        
-                        </th>
-                        <th>
-                            <div style="text-align: right;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
-                                    <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/>
-                                    <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708z"/>
-                                </svg>
-                                <a href="static/download/summary_statistics(tajimas_d).txt" download> Download summary statistics file for Tajima's D</a>
-                            </div>
-                        </th>
-                    </tr>
-                    {% for pop in population_for_stats %}
-                        <tr>
-                            <td>
-                                <div style="padding-top: 40px;">
-                                    <h6 style="color: red;">{{ population_abbr[pop] }}</h6>
-                                </div>
-                            </td>
-                            <td>
-                                <div>
-                                    <img style="width: 100%;" src="static/plots/plot_tajimas_d_{{ pop }}.png" alt="Tajima's D plot for {{ pop }}">
-                                </div>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </table>
-            {% endif %}
-        
-            {% if 'fst' in stats_metric %}
-                <table class="plot-table">
-                    <tr>
-                        <th>
-                            <div>
-                                <h5>Fixation index (FST):</h5>
-                            </div>
-                        </th>
-                        <th>
-                            <div style="text-align: right;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
-                                    <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/>
-                                    <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708z"/>
-                                </svg>
-                                <a href="static/download/summary_statistics(fst).txt" download> Download summary statistics file for FST</a>
-                            </div>
-                        </th>
-                    </tr>
+                        </div>
+                    </div>
+                </div>
 
-                    {% for population in population_for_stats %}
-                        <tr>
-                            <td>
-                                <div style="padding-top: 40px;">
-                                    <h6 style="color: red">{{ population_abbr[population] }} vs European</h6>
-                                </div>
-                            </td>
-                            <td>
-                                <div>
-                                    <img style="width: 100%;" src="static/plots/plot_fst_{{population}}_EUR.png" alt="FST plot for {{ population_abbr[population] }} vs European">
-                                </div>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </table>
-            {% endif %}
             </div>
           </div>
         </div>
